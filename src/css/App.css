@@ -2,3 +2,22 @@
   display: flex;
   gap: 40px;
 }
+
+.left-side {
+  background-color: #015c55;
+  height: 115vh;
+  width: 20%;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.right-side {
+  background-color: #fff;
+  height: 100vh;
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+}
