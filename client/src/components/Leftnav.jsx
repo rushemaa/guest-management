@@ -5,8 +5,24 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
+import { logout } from '../service/reducers/AuthSlice';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 
 export default function LeftNav() {
+
+
+  const dispatch = useDispatch()
+  const auth = JSON.parse(sessionStorage.getItem(import.meta.env.REACT_APP_AUTH));
+  const navigate = useNavigate()
+
+
+  useEffect(() => {
+    if (auth === null) {
+      navigate('/')
+    }
+  }, [auth])
   return (
     <>
       <div className="user-info">
@@ -52,8 +68,8 @@ export default function LeftNav() {
             <h4 className="nav-name">Admin</h4>
           </a>
         </li>
-        <li>
-          <a href="/">
+        <li onClick={() => dispatch(logout())}>
+          <a href="#">
             <div className="icon">
               <LogoutIcon className="icons" />
             </div>

@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router';
 import Alert from './feedback/Alert';
 import { getAuthError, getAuthState, getAuthStatus, login } from '../service/reducers/AuthSlice';
 import SubmitButton from './buttons/SubmitButton';
+import NButton from './buttons/NButton';
+import { setMessage } from '../service/reducers/AlertSlice';
 
 
 const Login = () => {
@@ -15,12 +17,14 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const auth = JSON.parse(sessionStorage.getItem(import.meta.env.REACT_APP_AUTH));
+
   const status = useSelector(getAuthStatus);
   const authState = useSelector(getAuthState)
   const error = useSelector(getAuthError)
 
   const handleLogin = () => {
-    dispatch(login(state));
+    dispatch(login(state))
   }
 
   useEffect(() => {
@@ -31,7 +35,7 @@ const Login = () => {
 
   useEffect(() => {
     if (status) {
-      if (auth.user.Role === "ADMIN") {
+      if (auth.user.role === "ADMIN") {
         navigate("/home");
       } else {
         navigate("/");
@@ -41,7 +45,7 @@ const Login = () => {
 
   const handleChange = (e, type) => {
     const { name, value } = e.target;
-    setState({ ...accountState, [name]: value });
+    setState({ ...state, [name]: value });
   };
   return (
     <div className="login">
@@ -53,15 +57,15 @@ const Login = () => {
       <div className="r-side">
         <h2>LOGIN</h2>
         <p>Welcome back! It's good to have you here again.</p>
-        <form onSubmit={()=>{handleLogin()}}>
+        <form>
           <input
             type="text"
-            name="email"
+            name="username"
             onChange={(e) => {
               handleChange(e);
             }}
             className="login-input"
-            placeholder="Username or Email"
+            placeholder="Username"
           />
           <input
             type="password"
@@ -72,7 +76,7 @@ const Login = () => {
               handleChange(e);
             }}
           />
-          <SubmitButton value={'Sign in'} onsubmit={'Signing in...'} status={status} />
+          <NButton value={'Sign in'} onsubmit={'Signing in...'} status={status} onclick={handleLogin}/>
         </form>
       </div>
     </div>

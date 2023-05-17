@@ -5,6 +5,6 @@ import AuthSlice from './service/reducers/AuthSlice';
 export const store = configureStore({
     reducer: {
       alert: setAlert,
-      auth: AuthSlice
+      auth: AuthSlice,
     }
   });
