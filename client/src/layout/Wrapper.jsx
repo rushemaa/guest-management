@@ -5,12 +5,12 @@ const Wrapper = ({ title, toggle, isToggled, children }) => {
     return (
         <div
             style={{ backdropFilter: 'blur(5px)', zIndex: '1002' }}
-            className={`fixed flex items-center align-center bg-gray-500 bg-opacity-50 z-50 show w-full md:inset-0 md:h-full ${toggle ? '' : ' hidden'
+            className={`fixed flex items-center align-center bg-opacity-50 z-50 show w-full md:inset-0 md:h-full ${toggle ? '' : ' hidden'
                 }`}>
             <div className='relative w-full h-full flex justify-center p-4 items-center md:h-screen'>
-                <div className='relative bg-white rounded-lg w-2/3 shadow dark:bg-gray-700'>
-                    <div className='flex items-center justify-between p-5 border-b rounded-t dark:border-gray-600'>
-                        <h3 className='text-sm font-bold text-center text-gray-900 dark:text-white'>
+                <div className='relative bg-white rounded-lg w-1/3 shadow '>
+                    <div className='flex items-center justify-between p-5 border-b rounded-t'>
+                        <h3 className='text-sm font-bold text-center text-gray-900 '>
                             {title}
                         </h3>
                         <button

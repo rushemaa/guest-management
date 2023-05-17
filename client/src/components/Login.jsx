@@ -17,7 +17,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const auth = JSON.parse(sessionStorage.getItem(import.meta.env.REACT_APP_AUTH));
+  const auth = JSON.parse(sessionStorage.getItem(import.meta.env.VITE_APP_AUTH));
 
   const status = useSelector(getAuthStatus);
   const authState = useSelector(getAuthState)

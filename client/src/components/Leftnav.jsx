@@ -14,7 +14,7 @@ export default function LeftNav() {
 
 
   const dispatch = useDispatch()
-  const auth = JSON.parse(sessionStorage.getItem(import.meta.env.REACT_APP_AUTH));
+  const auth = JSON.parse(sessionStorage.getItem(import.meta.env.VITE_APP_AUTH));
   const navigate = useNavigate()
 
 

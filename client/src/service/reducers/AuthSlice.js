@@ -32,7 +32,7 @@ export const AuthSlice = createSlice({
             state.status = 'idle';
             state.user = {};
             state.isAuthenticated = false;
-            sessionStorage.removeItem(import.meta.env.REACT_APP_AUTH);
+            sessionStorage.removeItem(import.meta.env.VITE_APP_AUTH);
         },
     },
     extraReducers(builder) {
@@ -42,7 +42,7 @@ export const AuthSlice = createSlice({
             })
             .addCase(login.fulfilled, (state, action) => {
                 sessionStorage.setItem(
-                    import.meta.env.REACT_APP_AUTH,
+                    import.meta.env.VITE_APP_AUTH,
                     JSON.stringify({ user: {...action.payload}, isLoggedIn: true, token: action.payload.token  })
                 );
                 setAuthToken(action.payload.token)
