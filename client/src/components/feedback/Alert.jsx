@@ -7,7 +7,7 @@ import {
   getMessage,
   getType,
   getUrl
-} from '../../services/reducers/AlertSlice';
+} from '../../service/reducers/AlertSlice';
 
 const Alert = () => {
   const dispatch = useDispatch();

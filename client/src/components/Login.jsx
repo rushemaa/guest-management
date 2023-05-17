@@ -1,30 +1,33 @@
 import '../css/Login.css';
 import Logo from '../assets/logo.png';
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
+import Alert from './feedback/Alert';
+import { getAuthError, getAuthState, getAuthStatus, login } from '../service/reducers/AuthSlice';
+import SubmitButton from './buttons/SubmitButton';
 
 
-const Login = () =>  {
+const Login = () => {
 
   const [state, setState] = useState();
-  const [status, setStatus] = useState();
   const [loading, isLoading] = useState(false)
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const status = useSelector(getAuthStatus);
+  const authState = useSelector(getAuthState)
+  const error = useSelector(getAuthError)
 
-  const handleLogin = async () => {
-    isLoading(true)
-    axios.post(`${BASE_URL}/login`)
-      .then((res) => {
-        isLoading(false)
-        
-      }).catch(error => {
-        isLoading(false)
-        dispatch(setMessage({ type: 'error', message: error.response.data.message }))
-      })
+  const handleLogin = () => {
+    dispatch(login(state));
   }
+
+  useEffect(() => {
+    if (authState === "failed") {
+      dispatch(setMessage({ type: "error", message: error }))
+    }
+  }, [authState]);
 
   useEffect(() => {
     if (status) {
@@ -38,10 +41,11 @@ const Login = () =>  {
 
   const handleChange = (e, type) => {
     const { name, value } = e.target;
-    setAccountState({ ...accountState, [name]: value });
+    setState({ ...accountState, [name]: value });
   };
   return (
     <div className="login">
+      <Alert />
       <div className="l-side">
         <h1>GUEST MANAGEMENT SYSTEM</h1>
         <img alt="logo" src={Logo} />
@@ -49,14 +53,26 @@ const Login = () =>  {
       <div className="r-side">
         <h2>LOGIN</h2>
         <p>Welcome back! It's good to have you here again.</p>
-        <form>
+        <form onSubmit={()=>{handleLogin()}}>
           <input
             type="text"
+            name="email"
+            onChange={(e) => {
+              handleChange(e);
+            }}
             className="login-input"
             placeholder="Username or Email"
           />
-          <input type="text" className="login-input" placeholder="Password" />
-          <button>Sign in</button>
+          <input
+            type="password"
+            name="password"
+            className="login-input"
+            placeholder="Password"
+            onChange={(e) => {
+              handleChange(e);
+            }}
+          />
+          <SubmitButton value={'Sign in'} onsubmit={'Signing in...'} status={status} />
         </form>
       </div>
     </div>

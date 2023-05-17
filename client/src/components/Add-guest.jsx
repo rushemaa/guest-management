@@ -1,8 +1,11 @@
 import LeftNav from './Leftnav';
 import '../css/Add-guest.css';
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function AddGuest() {
+  const [state, setState] = useState();
+  const [status, setStatus] = useState();
+  const [loading, isLoading] = useState(false)
   return (
     <div className="App">
       <div className="left-side">
