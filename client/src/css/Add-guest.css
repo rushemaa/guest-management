@@ -49,18 +49,17 @@ fieldset {
 }
 
 legend {
-  margin-left: 5%;
+  margin-left: 3%;
 }
 
 .btn-add-guest {
-  background: #015c55;
+  background: #015c55 !important;
   border: 1px solid #015c55;
   border-radius: 10px;
-  font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
-  line-height: 24px;
+  line-height: calc(16px * 1.618);
   letter-spacing: 0.2px;
   color: #ffffff;
   padding: 10px;
