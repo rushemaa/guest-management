@@ -2,8 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary-bg: #015c55;
+  --primary-tint-bg: rgb(32, 125, 100, 0.9);
+  --primary-color: whitesmoke;
+}
+
 body {
   margin: 0;
   font-family: 'Work Sans', sans-serif;
   /* font-family: 'open sans', poppins; */
+}
+
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--primary-bg);
+  color: var(--primary-color);
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.report-table {
+  border-radius: 5px;
+  padding: 0;
+  background-color: var(--primary-bg);
+  /* background-color: blue; */
+}
+.report-table tr:nth-child(even) {
+  background-color: whitesmoke;
+  cursor: pointer;
+}
+.report-table tr th {
+  text-align: left;
+  padding: 10px;
+  color: var(--primary-color);
+}
+.report-table tr td {
+  padding: 10px;
+}
+.report-table tr:nth-child(odd) td {
+  background-color: var(--primary-tint-bg);
+  color: rgb(207, 205, 205);
+}
+.report-table tr:nth-child(even) td {
+  color: black;
+}
+.report-table tr:not(:last-child):hover {
+  filter: brightness(1.2) blur(.33px);
 }

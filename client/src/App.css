@@ -66,3 +66,7 @@
   flex-direction: column;
   padding: 25px 0;
 }
+
+button {
+  background-color: #015c55;
+}
