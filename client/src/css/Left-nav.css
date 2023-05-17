@@ -1,0 +1,71 @@
+.icons {
+  color: #fff;
+}
+
+.user-info {
+  display: flex;
+  color: #fff;
+  margin-left: 10%;
+  margin-top: 10vh;
+  align-items: center;
+}
+
+.user-logo {
+  margin-right: 3%;
+}
+
+.u-info h3 {
+  margin: initial;
+  padding: initial;
+  font-family: 'Work Sans', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+}
+
+.u-info h4 {
+  margin: initial;
+  padding: initial;
+  font-family: 'Work Sans', sans-serif;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 28px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  padding: initial;
+  margin: initial;
+}
+
+.nav-links li {
+  list-style: none;
+  display: flex;
+  padding: initial;
+  margin: initial;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.icon {
+  margin-left: 15%;
+  margin-right: 10%;
+}
+
+.nav-links li h4 {
+  font-family: 'Work Sans', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+}
