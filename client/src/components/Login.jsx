@@ -1,9 +1,45 @@
 import '../css/Login.css';
 import Logo from '../assets/logo.png';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 
 
 const Login = () =>  {
+
+  const [state, setState] = useState();
+  const [status, setStatus] = useState();
+  const [loading, isLoading] = useState(false)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+
+  const handleLogin = async () => {
+    isLoading(true)
+    axios.post(`${BASE_URL}/login`)
+      .then((res) => {
+        isLoading(false)
+        
+      }).catch(error => {
+        isLoading(false)
+        dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+      })
+  }
+
+  useEffect(() => {
+    if (status) {
+      if (auth.user.Role === "ADMIN") {
+        navigate("/home");
+      } else {
+        navigate("/");
+      }
+    }
+  }, [status]);
+
+  const handleChange = (e, type) => {
+    const { name, value } = e.target;
+    setAccountState({ ...accountState, [name]: value });
+  };
   return (
     <div className="login">
       <div className="l-side">
