@@ -16,7 +16,7 @@ export const login = createAsyncThunk(
     async (account, { rejectWithValue, fulfillWithValue }) => {
         let response;
         try {
-            response = await axios.post(BASE_URL + '/user/login', account);
+            response = await axios.post(BASE_URL + '/account/login', account);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response.data);
@@ -32,7 +32,7 @@ export const AuthSlice = createSlice({
             state.status = 'idle';
             state.user = {};
             state.isAuthenticated = false;
-            sessionStorage.removeItem(process.env.REACT_APP_AUTH);
+            sessionStorage.removeItem(import.meta.env.VITE_APP_AUTH);
         },
     },
     extraReducers(builder) {
@@ -42,8 +42,8 @@ export const AuthSlice = createSlice({
             })
             .addCase(login.fulfilled, (state, action) => {
                 sessionStorage.setItem(
-                    process.env.REACT_APP_AUTH,
-                    JSON.stringify({ user: {...action.payload.user}, isLoggedIn: true, token: action.payload.token  })
+                    import.meta.env.VITE_APP_AUTH,
+                    JSON.stringify({ user: {...action.payload}, isLoggedIn: true, token: action.payload.token  })
                 );
                 setAuthToken(action.payload.token)
                 state.isAuthenticated = true;

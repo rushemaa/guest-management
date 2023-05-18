@@ -25,15 +25,11 @@ export default function Guests() {
         </div>
         <div className="list py-10">
           <table className='w-full report-table'>
-            <thead>
-              <tr><th>#</th><th>Guest Names</th><th>Receiver</th><th>From</th><th>Date/Time</th><th>Actions</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>MUHIRE Jean Philipe</td><td>MIHIGO Yves</td><td>RMSoft</td><td>2023 may, 20</td><td>Actions</td></tr>
-              <tr><td>1</td><td>MUHIRE Jean Philipe</td><td>MIHIGO Yves</td><td>RMSoft</td><td>2023 may, 30</td><td>Actions</td></tr>
+            <tr><th>#</th><th>Guest Names</th><th>Receiver</th><th>From</th><th>Date/Time</th><th>Actions</th></tr>
+            <tr><td>1</td><td>MUHIRE Jean Philipe</td><td>MIHIGO Yves</td><td>RMSoft</td><td>2023 may, 20</td><td>Actions</td></tr>
+            <tr><td>1</td><td>MUHIRE Jean Philipe</td><td>MIHIGO Yves</td><td>RMSoft</td><td>2023 may, 30</td><td>Actions</td></tr>
 
-              <tr><td colSpan={6} className='text-right'>Total: 2</td></tr>
-            </tbody>
+            <tr><td colSpan={6} className='text-right'>Total: 2</td></tr>
           </table>
         </div>
       </div>
