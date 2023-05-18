@@ -16,7 +16,7 @@ export default function Admin() {
           </button>
         </div>
         <div className="list py-10">
-          <table className='w-full report-table'>
+          <table className='report-table'>
             <tr><th>#</th><th>Names</th><th>Instutition</th><th>Role</th><th>Action</th></tr>
             <tr><td>1</td><td>MUHIRE Jean Philipe</td><td>NISS</td><td>Hoster</td><td>Actions</td></tr>
             <tr><td>1</td><td>MUHIRE Jean Philipe</td><td>NISS</td><td>Hoster</td><td>Actions</td></tr>

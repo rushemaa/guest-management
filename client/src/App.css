@@ -65,8 +65,51 @@
   display: flex;
   flex-direction: column;
   padding: 25px 0;
+  padding-right: 5px;
+}
+.toggle-icon {
+  position: absolute;
+  top: 10px;
+  cursor: pointer;
+  opacity: 0;
+}
+.information {
+  font-size: 14px;
+  font-weight: lighter;
+  line-height: calc(11px * 1.618);
+  min-width: 33.33%;
+  width: auto
 }
 
-button {
-  background-color: #015c55;
+@media (width <= 768px) {
+  .left-side {
+    width: 40px;
+    border-radius: 0;
+    position: absolute;
+    z-index: 1001;
+    /* background-color: blue; */
+  }
+  .right-side {
+    position: absolute;
+    left: 45px;
+    width: calc(100% - 45px);
+    z-index: 1000;
+  }
+  .user-logo, .u-info, .nav-links h4 {
+    display: none;
+  }
+  .toggle-icon {
+    opacity: 1;
+  }
+  .left-side:focus-within {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    width: 300px;
+  }
+  .left-side:focus-within .user-info .toggle-icon {
+    opacity: 0;
+  }
+  .left-side:focus-within .user-logo, .left-side:focus-within .u-info, .left-side:focus-within .nav-links h4 {
+    display: block;
+  }
 }

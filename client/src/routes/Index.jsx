@@ -5,6 +5,7 @@ import Home from "../components/Home"
 import AddGuest from "../components/Add-guest"
 import Guests from "../components/Guests"
 import Admin from "../components/Admin"
+import Guest from "../components/Guest"
 
 const AppRoutes = () => {
     return (
@@ -27,7 +28,11 @@ const AppRoutes = () => {
                     path='/guests'
                     element={<Guests />}
                 />
-
+                <Route
+                    exact
+                    path='/guest/:id'
+                    element={<Guest />}
+                />
                 <Route
                     exact
                     path='/admin'

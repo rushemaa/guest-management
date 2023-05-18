@@ -12,7 +12,7 @@ export default function AddGuest() {
         <LeftNav />
       </div>
       <div className="right-side">
-        <h1 className='font-semibold'>Guest Registration</h1>
+        <h1 className='font-semibold text-2xl w-full text-center'>Guest Registration</h1>
         <form className="add-guest-form py-3">
           <fieldset>
             <legend>Guest</legend>

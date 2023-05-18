@@ -1,5 +1,6 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import '../css/Left-nav.css';
+import DehazeRoundedIcon from '@mui/icons-material/DehazeRounded';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
@@ -12,6 +13,9 @@ export default function LeftNav() {
       <div className="user-info">
         <div className="user-logo">
           <AccountCircleIcon style={{ color: '#fff' }} sx={{ fontSize: 100 }} />
+        </div>
+        <div className="toggle-icon" tabIndex={0}>
+          <DehazeRoundedIcon style={{ color: '#fff' }} sx={{ fontSize: 30 }} />
         </div>
         <div className="u-info">
           <h3>Kabera Joe</h3>
