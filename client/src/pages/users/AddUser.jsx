@@ -19,6 +19,11 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
     }
   }, [data])
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setState({ ...state, [name]: value });
+  };
+
   const getGates = () => {
     axios.get(BASE_URL + `/gate/findAll`)
       .then(res => {
@@ -38,7 +43,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
     isLoading(true)
     if (!state?.id) {
       try {
-        const res = await axios.post(BASE_URL + '/member/adminCreate', { ...state });
+        const res = await axios.post(BASE_URL + '/account/create', { ...state });
         if (res.status === 200) {
           isLoading(false);
           isToggled(false)
@@ -51,7 +56,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
       }
     } else {
       try {
-        const res = await axios.put(`${BASE_URL}/user/update`, { ...state })
+        const res = await axios.put(`${BASE_URL}/account/update`, { ...state })
         if (res.data.status == 'ok') {
           isLoading(false);
           isToggled(false)
@@ -75,7 +80,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
               value={state?.fullName}
               onChange={(e) => { handleChange(e) }} autoComplete="off" />
             <label htmlFor="lastname"
-              className="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              className="absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
               Full names *
             </label>
           </div>
@@ -107,8 +112,8 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
               value={state?.username}
               onChange={(e) => { handleChange(e) }} autoComplete="off" />
             <label htmlFor="lastname"
-              className=" absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-              Username or email *
+              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              Username *
             </label>
           </div>
           <div className="relative z-0 w-2/5 mb-2 group">
@@ -136,8 +141,8 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
             <div className='flex justify-start ml-5'>
               <div className="relative z-0 w-2/5 mb-2 group">
                 <select
-                  name='role'
-                  value={state?.role}
+                  name='GateId'
+                  value={state?.gateId}
                   onChange={(e) => { handleChange(e) }}
                   className='block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer'
                   placeholder=' '
@@ -146,9 +151,9 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
                   <option className='text-xs' value=''>
                     Gate *
                   </option>
-                  {['HOST', 'ADMIN', 'SECURITY OFFICER', 'GATE'].map((item, key) => (
-                    <option key={key} className='text-xs' value={item}>
-                      {item}
+                  {gates?.map((item, key) => (
+                    <option key={key} className='text-xs' value={item.id}>
+                      {item.gate}
                     </option>
                   ))}
                 </select>
@@ -164,7 +169,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
               value={state?.password}
               onChange={(e) => { handleChange(e) }} autoComplete="off" />
             <label htmlFor="password"
-              className=" absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
               Password *
             </label>
           </div>
@@ -172,10 +177,10 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
             <input type="password" name="confirmPassword"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none   focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" " required=""
-              value={state?.password}
+              value={state?.confirmPassword}
               onChange={(e) => { handleChange(e) }} autoComplete="off" />
             <label htmlFor="password"
-              className=" absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
               Confirm Password *
             </label>
           </div>

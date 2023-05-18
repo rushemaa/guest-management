@@ -4,7 +4,7 @@ import { ImSpinner6 } from "react-icons/im";
 
 function Loader() {
   return (
-    <div role='status' className='my-4 animate-spin'>
+    <div role='status' className='my- animate-spin'>
       <IconContext.Provider value={{ size: '1.5em', color: '#005d55' }}>
         <ImSpinner6 />
       </IconContext.Provider>
