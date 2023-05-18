@@ -23,9 +23,11 @@ app.listen(PORT, () => {
 
 const accountRoutes = require("./src/Account/AccountRoutes");
 const gatesRoutes = require("./src/Gates/GateRoutes");
+const guestRoutes = require("./src/Guest/GuestRouters");
 
 app.use("/account", accountRoutes);
 app.use("/gate", gatesRoutes);
+app.use("/guest", guestRoutes);
 
 app.get("/test", (req, res) => {
   res.send("API testing ...");

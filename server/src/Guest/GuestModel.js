@@ -31,14 +31,32 @@ const Guest = sequelize.define(
     time: {
       type: DataTypes.TIME,
       allowNull: false,
+      validate: {
+        isNull: {
+          args: true,
+          msg: "please enter guest arrival time",
+        },
+      },
     },
     Date: {
       type: DataTypes.DATEONLY,
       allowNull: false,
+      validate: {
+        isNull: {
+          args: true,
+          msg: "please enter guest arraval date",
+        },
+      },
     },
     hostFullName: {
       type: DataTypes.STRING(40),
       allowNull: false,
+      validate: {
+        isNull: {
+          args: true,
+          msg: "please enter host fullname",
+        },
+      },
     },
     hostCallSign: {
       type: DataTypes.STRING(13),
@@ -47,10 +65,22 @@ const Guest = sequelize.define(
     recieverFullName: {
       type: DataTypes.STRING(40),
       allowNull: false,
+      validate: {
+        isNull: {
+          args: true,
+          msg: "please enter reciever fullname",
+        },
+      },
     },
     recieverPhoneNumber: {
       type: DataTypes.STRING(13),
       allowNull: false,
+      validate: {
+        isNull: {
+          args: true,
+          msg: "please enter reciever phone number",
+        },
+      },
     },
     condition: {
       type: DataTypes.STRING(40),
@@ -78,3 +108,4 @@ Guest.sync({ alter: false, force: false })
   });
 
 module.exports = Guest;
+

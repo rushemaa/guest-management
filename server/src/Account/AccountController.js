@@ -9,7 +9,7 @@ const Gate = require("../Gates/GateModel");
 
 require("dotenv").config();
 
-const createAccount = async (req, res, next) => {
+const  createAccount = async (req, res, next) => {
   try {
     let dt = req.body;
     let user = req.user.user;
@@ -34,6 +34,12 @@ const createAccount = async (req, res, next) => {
       role: dt.role,
       status: "ACTIVE",
     };
+    if (dt.role === "GATE") {
+      if (!dt.GateId) throw "please select gate";
+      let gateSearch = await Gate.findByPk(dt.GateId);
+      if (!gateSearch || gateSearch === null) throw "invalid selected gate";
+      savingObj.GateId = dt.GateId;
+    }
     let result = await Account.create(savingObj);
     return res.status(200).json({ status: "ok", data: result });
   } catch (err) {
@@ -41,7 +47,7 @@ const createAccount = async (req, res, next) => {
     if (
       ["SequelizeUniqueConstraintError", "SequelizeValidationError"].includes(
         err.name
-      )
+      )``
     )
       err = err.errors[0].message;
     res.status(412).json({ status: "fail", message: err });

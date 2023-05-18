@@ -25,8 +25,8 @@ const Gate = sequelize.define(
   }
 );
 
-// Account.belongsTo(Gate);
-// Gate.hasMany(Account);
+Account.belongsTo(Gate);
+Gate.hasMany(Account);
 
 
 Gate.sync({ alter: false, force: false })
