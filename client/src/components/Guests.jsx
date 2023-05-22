@@ -24,7 +24,7 @@ export default function Guests() {
     getGuests(1)
   }, [])
 
-  console.log(guests)
+  // console.log(guests)
 
   return (
     <div className="App">
