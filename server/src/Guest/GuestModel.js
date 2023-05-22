@@ -1,16 +1,18 @@
 const sequelize = require("../../configuration/dbConfig");
 const Sequelize = require("sequelize");
 const Gate = require("../Gates/GateModel");
+const Host = require("../Host/HostModel");
+const { getRansadomString } = require("../../tools/functions");
 const { DataTypes } = Sequelize;
 
 const Guest = sequelize.define(
   "Guest",
   {
-    guestNames: {
+    guestFullName: {
       type: DataTypes.STRING(60),
       allowNull: false,
       validate: {
-        isNull: {
+        notNull: {
           args: true,
           msg: "please enter guest names",
         },
@@ -32,59 +34,106 @@ const Guest = sequelize.define(
       type: DataTypes.TIME,
       allowNull: false,
       validate: {
-        isNull: {
+        notNull: {
           args: true,
           msg: "please enter guest arrival time",
         },
       },
     },
-    Date: {
+    date: {
       type: DataTypes.DATEONLY,
       allowNull: false,
       validate: {
-        isNull: {
+        notNull: {
           args: true,
           msg: "please enter guest arraval date",
         },
       },
     },
-    hostFullName: {
+    receiverFullName: {
       type: DataTypes.STRING(40),
       allowNull: false,
       validate: {
-        isNull: {
-          args: true,
-          msg: "please enter host fullname",
-        },
-      },
-    },
-    hostCallSign: {
-      type: DataTypes.STRING(13),
-      allowNull: true,
-    },
-    recieverFullName: {
-      type: DataTypes.STRING(40),
-      allowNull: false,
-      validate: {
-        isNull: {
+        notNull: {
           args: true,
           msg: "please enter reciever fullname",
         },
       },
     },
-    recieverPhoneNumber: {
+    receiverPhoneNumber: {
       type: DataTypes.STRING(13),
       allowNull: false,
       validate: {
-        isNull: {
+        notNull: {
           args: true,
           msg: "please enter reciever phone number",
         },
       },
     },
-    condition: {
+    conditions: {
       type: DataTypes.STRING(40),
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg: "conditions can not be null",
+        },
+      },
+    },
+    guestStatus: {
+      type: DataTypes.ENUM("VIP", "VVIP", "NORMAL", "SENIOR OFFICIAL"),
+      allowNull: false,
+      validate: {
+        isIn: {
+          args: [["VIP", "VVIP", "NORMAL", "SENIOR OFFICIAL"]],
+          msg: "Please select correct status",
+        },
+      },
+    },
+    guestAnonymous: {
+      type: DataTypes.ENUM("ANONYMOUS", "NORMAL"),
+      allowNull: false,
+      defaultValue: "NORMAL",
+      validate: {
+        isIn: {
+          args: [["ANONYMOUS", "NORMAL"]],
+          msg: "Please select a collect anonymit",
+        },
+      },
+    },
+    comment: {
+      type: DataTypes.TEXT,
       allowNull: true,
+    },
+    visitStatus: {
+      type: DataTypes.ENUM("PENDING", "VISITED", "POSTPONED"),
+      defaultValue: "PENDING",
+      validate: {
+        isIn: {
+          args: [["PENDING", "VISITED", "POSTPONED"]],
+          msg: "Invalid visit status",
+        },
+      },
+    },
+    guestKeys: {
+      type: DataTypes.STRING(80),
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg: "guest key is required",
+        },
+      },
+      set(value) {
+        this.setDataValue(
+          "guestKeys",
+          `${this.guestFullName},${this.guestIdNumber},${this.guestPhone},${this.randomReference}`
+        );
+      },
+    },
+    randomReference: {
+      type: DataTypes.STRING(18),
+      unique: true,
     },
   },
   {
@@ -101,6 +150,9 @@ Guest.belongsTo(Gate, {
   foreignKey: "gate",
 });
 
+Host.hasMany(Guest);
+Guest.belongsTo(Host);
+
 Guest.sync({ alter: false, force: false })
   .then()
   .catch((err) => {
@@ -108,4 +160,3 @@ Guest.sync({ alter: false, force: false })
   });
 
 module.exports = Guest;
-

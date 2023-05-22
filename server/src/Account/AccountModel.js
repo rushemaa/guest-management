@@ -1,5 +1,6 @@
 const sequelize = require("../../configuration/dbConfig");
 const Sequelize = require("sequelize");
+const { password_hashing } = require("../../tools/auth");
 const { DataTypes } = Sequelize;
 
 const Account = sequelize.define(
@@ -32,7 +33,7 @@ const Account = sequelize.define(
       validate: {
         isIn: {
           args: [["DI", "NISS"]],
-          msg: "please select collect institution",
+          msg: "please select correct institution",
         },
       },
     },
@@ -52,7 +53,7 @@ const Account = sequelize.define(
       validate: {
         isIn: {
           args: [["HOST", "SECURITY OFFICER", "ADMIN", "GATE"]],
-          msg: "please select collect user role",
+          msg: "please select correct user role",
         },
       },
     },
@@ -67,7 +68,7 @@ const Account = sequelize.define(
       validate: {
         isIn: {
           args: [["ACTIVE", "DEACTIVATED"]],
-          msg: "please select collect user status",
+          msg: "please select correct user status",
         },
       },
     },
@@ -80,13 +81,30 @@ const Account = sequelize.define(
 );
 
 Account.sync({ alter: false, force: false })
-  .then()
+  .then(() => {
+    createinitialAccount();
+  })
   .catch((err) => {
     console.log(err);
   });
 
 const createinitialAccount = async () => {
   try {
+    let resu = await Account.count({
+      where: {
+        // username: "admin",
+        status: "ACTIVE",
+      },
+    });
+    if (resu === 0) {
+      await Account.create({
+        fullName: "initial account",
+        username: "admin",
+        password: password_hashing("Password@123"),
+        role: "ADMIN",
+        institution: "NISS",
+      });
+    }
   } catch (err) {
     console.log(err);
     throw err;
