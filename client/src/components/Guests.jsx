@@ -1,9 +1,31 @@
+import React, { useState, useEffect } from 'react';
 import LeftNav from './Leftnav';
-import React from 'react';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import axios from 'axios';
+import { BASE_URL } from '../utils/constants';
+import RemoveRedEyeTwoToneIcon from '@mui/icons-material/RemoveRedEyeTwoTone';
+// import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 
 export default function Guests() {
+
+  const [guests, setGuests] = useState();
+
+  const getGuests = async (page) => {
+    axios.get(BASE_URL + `/guest/findAll/visitStatus/ALL/page/${page}`)
+      .then(res => {
+        setGuests([...res.data.data])
+      })
+      .catch(error => {
+        dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+      })
+  }
+
+  useEffect(() => {
+    getGuests(1)
+  }, [])
+
+  console.log(guests)
+
   return (
     <div className="App">
       <div className="left-side">
@@ -26,10 +48,20 @@ export default function Guests() {
         <div className="list py-10">
           <table className='w-full report-table'>
             <tr><th>#</th><th>Guest Names</th><th>Receiver</th><th>From</th><th>Date/Time</th><th>Actions</th></tr>
-            <tr><td>1</td><td>MUHIRE Jean Philipe</td><td>MIHIGO Yves</td><td>RMSoft</td><td>2023 may, 20</td><td>Actions</td></tr>
-            <tr><td>1</td><td>MUHIRE Jean Philipe</td><td>MIHIGO Yves</td><td>RMSoft</td><td>2023 may, 30</td><td>Actions</td></tr>
+            { guests?.map((guest, index) => (
+            <tr>
+              <td>{index + 1}</td>
+              <td>{guest.guestFullName}</td>
+              <td>{guest.receiverFullName}</td>
+              <td>{guest.comeFrom}</td>
+              <td>{guest.date} {guest.time}</td>
+              <td>
+                <RemoveRedEyeTwoToneIcon onClick={() => location.href=`guest/${guest.randomReference}`} />
+              </td></tr>
+            ))}
 
-            <tr><td colSpan={6} className='text-right'>Total: 2</td></tr>
+            <tr><td colSpan={6} className='text-right'>Total: {guests
+            ?.length}</td></tr>
           </table>
         </div>
       </div>

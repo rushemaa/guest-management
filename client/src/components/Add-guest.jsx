@@ -551,6 +551,32 @@ export default function AddGuest() {
 
 
                       <div class="entry-card p-5">
+                      <div className='grid gap-x-10 gap-y-3 grid-cols-3 border-t border-b'>
+                          <div className='flex flex-col'>
+                            <label>Car plate</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                          <div className='flex flex-col'>
+                            <label>Model</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                          <div className='flex flex-col'>
+                            <label>Color</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                          <div className='flex flex-col'>
+                            <label>Driver</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                          <div className='flex flex-col'>
+                            <label>Driver Contact</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                          <div className='flex flex-col'>
+                            <label>Id Number</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                        </div>
                         <div className='grid gap-x-10 gap-y-3 grid-cols-3 border-t border-b'>
                           <div className='flex flex-col'>
                             <label>Car plate</label>
