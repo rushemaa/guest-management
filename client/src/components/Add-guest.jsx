@@ -107,6 +107,11 @@ export default function AddGuest() {
 
   const handleEntryMode = (e) => {
     CarContainerRef.current.innerHTML = "";
+    const addBtn = document.querySelector('.add-btn');
+    if(e.target.value === "1")
+      return addBtn.classList.add("hidden");
+
+    addBtn.classList.remove("hidden");
     if(e.target.value === '2') 
       handleAddCar(true);
     if(e.target.value === '3')
@@ -254,8 +259,16 @@ export default function AddGuest() {
                           <option value="">Select</option>
                           <option value="VVIP">VVIP</option>
                           <option value="VIP">VIP</option>
-                          <option value="Senior official">Senior official</option>
-                          <option value="Normal">Normal</option>
+                          <option value="SENIOR OFFICIAL">Senior official</option>
+                          <option value="NORMAL">Normal</option>
+                        </select>
+                      </div>
+                      <div className="input-group">
+                        <label for="state">Guest State</label>
+                        <select id="state">
+                          <option value="">Select</option>
+                          <option value="ANONYMOUS">Anonymous</option>
+                          <option value="NORMAL">Normal</option>
                         </select>
                       </div>
                     </div>
@@ -309,16 +322,16 @@ export default function AddGuest() {
                   <form className='add-guest-form py-3 relative flex flex-col flex-wrap gap-2 min-h-[99%]' >
                     <div className='flex gap-2 absolute right-0 top-0'>
                       <button onClick={handlePrevious}> <ArrowCircleLeftIcon /> &nbsp; Go back </button>
-                      <button onClick={() => handleAddCar(false)}> <AddCircleIcon /> &nbsp; Add car</button>
+                      <button className='add-btn hidden' onClick={() => handleAddCar(false)}> <AddCircleIcon /> &nbsp; Add car</button>
                     </div>
                     
                     <div className="entry-card">
                       <fieldset className='p-5'>
                         <legend>Entry mode</legend>
                         <div className="input-group min-w-[100%]">
-                          <label for="gnames">Guest Names</label>
+                          <label for="gnames">Guest Entry Mode</label>
                           <select onChange={handleEntryMode}>
-                            <option value="">Choose guest drive mode</option>
+                            <option value="">Choose guest entry mode</option>
                             <option value='1'> on foot </option>
                             <option value='2'> self drive </option>
                             <option value='3'> driver </option>
