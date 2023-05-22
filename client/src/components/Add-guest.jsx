@@ -8,12 +8,17 @@ import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
 import { setMessage } from '../service/reducers/AlertSlice';
 import NButton from './buttons/NButton';
+import Alert from './feedback/Alert';
+import { useNavigate } from 'react-router-dom';
+import SubmitButton from './buttons/SubmitButton';
 
 export default function AddGuest() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const [state, setState] = useState({ entryMode: 'BY FOOT', transportation: [] });
   const [car, setCar] = useState({});
   const [gates, setGates] = useState()
+  const [hosts, setHosts] = useState([])
   const [selfDrive, isSelfDrive] = useState();
   const [loading, isLoading] = useState(false);
   const CarContainerRef = useRef();
@@ -21,6 +26,10 @@ export default function AddGuest() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setState({ ...state, [name]: value });
+    if (name === 'HostId') {
+      console.log(hosts?.filter(item => item.id == value))
+      setState({ ...state, callSign: hosts?.filter(item => item.id == value)[0].callSign });
+    }
     console.log(state);
   };
 
@@ -29,7 +38,7 @@ export default function AddGuest() {
     console.log(car);
     setState({ ...state, transportation: [...state?.transportation, { ...car }] })
     console.log(state)
-    setCar({})
+    setCar({ plateNumber: '', vehicleColour: '', vehicleModel: '', driverFullName: '', driverPhoneNumber: '', driverNationId: '' })
   }
 
   const handleCarChange = (e) => {
@@ -38,30 +47,15 @@ export default function AddGuest() {
     console.log(car)
   };
 
-  const handleCar = (e) => {
-    const { name, value } = e.target;
-    const index = name.charAt(name.length - 1)
-    let temp = state?.transportation[index] ? state?.transportation[index] : car ? { "type": 'DRIVER' } : { "type": state?.entryMode }
-    const namee = name.slice(0, -1)
-    temp = { ...temp, [namee]: value }
-    let tempTR = state?.transportation
-    tempTR[index] = temp
-    setState({ ...state, transportation: [...tempTR] });
-    console.log(state);
-  };
-
   // const handleCar = (e) => {
   //   const { name, value } = e.target;
   //   const index = name.charAt(name.length - 1)
+  //   let temp = state?.transportation[index] ? state?.transportation[index] : car ? { "type": 'DRIVER' } : { "type": state?.entryMode }
   //   const namee = name.slice(0, -1)
-  //   setState({
-  //     ...state, transportation: state?.transportation?.map((item, i) => {
-  //       if (index === i) {
-  //         return { ...item, [namee]: value }
-  //       }
-  //       return item
-  //     })
-  //   });
+  //   temp = { ...temp, [namee]: value }
+  //   let tempTR = state?.transportation
+  //   tempTR[index] = temp
+  //   setState({ ...state, transportation: [...tempTR] });
   //   console.log(state);
   // };
 
@@ -71,25 +65,33 @@ export default function AddGuest() {
         setGates([...res.data.data])
       })
       .catch(error => {
-        console.log(error);
-        // dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+        dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+      })
+  }
+
+  const getHosts = () => {
+    axios.get(BASE_URL + `/host/findAll`)
+      .then(res => {
+        setHosts([...res.data.data])
+      })
+      .catch(error => {
+        dispatch(setMessage({ type: 'error', message: error.response.data.message }))
       })
   }
 
   useEffect(() => {
     getGates()
+    getHosts()
   }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     isLoading(true)
-
     try {
       const res = await axios.post(BASE_URL + '/guest/create', { ...state });
       if (res.status === 200) {
         isLoading(false);
-        isToggled(false)
-        postOp()
+        navigate('/guests')
         dispatch(setMessage({ type: 'success', message: 'Guest registered successfully' }))
         e.target.reset()
       }
@@ -114,6 +116,7 @@ export default function AddGuest() {
   }
 
   const handlePrevious = (e) => {
+    e.preventDefault()
     const tab = e.target.closest('.tab');
     const recentTabNum = document.querySelector(`.tab-num[data-id='${+tab.dataset.id - 1}']`);
     const recentTab = document.querySelector(`.tab[data-id='${+tab.dataset.id - 1}']`);
@@ -127,123 +130,16 @@ export default function AddGuest() {
     recentTabNum.innerHTML = `${tab.dataset.id - 1}`;
     tabLink.classList.remove('filled');
   }
-  const handleTest = () => CarContainerRef.current.addEventListener('click', (e) => {
-    e.target.addEventListener('change', (e) => handleCar(e));
-  })
-
-  const handleAddCar = (isSelfDrive) => {
-    event.preventDefault();
-
-    CarContainerRef.current.insertAdjacentHTML('beforeend',
-      `<div class="entry-card">
-        <fieldset class='flex flex-col gap-3 p-5'>
-          <legend>Car & driver</legend>
-          <div class="input-group min-w-[100%]">
-            <label for="gnames">Car plate <span class='text-red-400'>*</span></label>
-            <input
-              type="text"
-              id="plate"
-              name="plate"
-              placeholder="Car Plate Number"
-            />
-          </div>
-          <div class="input-group min-w-[100%]">
-            <label for="gnames">Model</label>
-            <input
-              type="text"
-              id="model"
-              name="model"
-              placeholder="Car Model"
-            />
-          </div>
-          <div class="input-group min-w-[100%]">
-            <label for="gnames">Color</label>
-            <input
-              type="text"
-              id="color"
-              name="color"
-              placeholder="Car Color"
-            />
-          </div>
-          <div class=${!(isSelfDrive) ? '' : 'hidden'}>
-            <label for="gnames">Driver name <span class='text-red-400'>*</span></label>
-            <input class="input-group min-w-[100%]"
-              type="text"
-              id="driver"
-              name="driver"
-              placeholder="Car Driver"
-            />
-          </div>
-          <div class=${!(isSelfDrive) ? '' : 'hidden'}>
-            <label for="gnames">Driver contact <span class='text-red-400'>*</span></label>
-            <input class="input-group min-w-[100%]"
-              type="text"
-              id="contact"
-              name="contact"
-              placeholder="Driver phone number"
-            />
-          </div>
-          <div class=${!(isSelfDrive) ? '' : 'hidden'}>
-            <label for="gnames">Driver Id number</label>
-            <input class="input-group min-w-[100%]"
-              type="text"
-              id="id"
-              name="id"
-              placeholder="Driver National Id"
-            />
-          </div>
-        </fieldset>
-      </div>`
-    )
-    setTimeout(() => {
-      setCar(prevState => prevState + 1)
-    }, 50)
-  };
-
-  const carHTML = (
-    <div class="entry-card">
-      <fieldset class='flex flex-col gap-3 p-5'>
-        <legend>Car & driver</legend>
-        <div class="input-group min-w-[100%]">
-          <label for="gnames">Car plate <span class='text-red-400'>*</span></label>
-          <input
-            type="text"
-            id="plate"
-            name="plate"
-            placeholder="Car Plate Number"
-          />
-        </div>
-        <div class="input-group min-w-[100%]">
-          <label for="gnames">Model</label>
-          <input
-            type="text"
-            id="model"
-            name="model"
-            placeholder="Car Model"
-          />
-        </div>
-        <div class="input-group min-w-[100%]">
-          <label for="gnames">Color</label>
-          <input
-            type="text"
-            id="color"
-            name="color"
-            placeholder="Car Color"
-          />
-        </div>
-      </fieldset>
-    </div>
-  )
 
   const handleEntryMode = (e) => {
     const { value } = e.target;
-    console.log(`value is ${value}`)
     isSelfDrive(value === '2')
     setState({ ...state, entryMode: value === '1' ? "BY FOOT" : value === '2' ? 'SELF DRIVING' : 'DRIVER' })
   }
 
   return (
     <div className="App">
+      <Alert />
       <div className="left-side">
         <LeftNav />
       </div>
@@ -261,7 +157,7 @@ export default function AddGuest() {
           </div>
           <div className='tab-content'>
             <div className='tab' data-id='1'>
-              <form className='add-guest-form py-3' onSubmit={(e) => handleSubmit(e)}>
+              <form className='add-guest-form py-3' onSubmit={(e) => { handleSubmit(e) }}>
                 <fieldset>
                   <legend>Guest</legend>
 
@@ -340,10 +236,11 @@ export default function AddGuest() {
                     <label for="host">Host</label>
                     <select id="host" name='HostId' onChange={(e) => { handleChange(e) }}>
                       <option value="">Select a Host</option>
-                      <option value="HDI">HDI</option>
-                      <option value="DHDI">DHDI</option>
-                      <option value="DI Admin">DI Admin</option>
-                      <option value="DI LO">DI LO</option>
+                      {hosts?.map((item, key) => (
+                        <option key={key} className='text-xs' value={item.id}>
+                          {item.hostName}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div className="input-group">
@@ -389,7 +286,7 @@ export default function AddGuest() {
                 <div className="input-row">
                   <div className="input-group">
                     <label for="status">Status</label>
-                    <select id="status">
+                    <select id="status" name='guestStatus' onChange={(e) => { handleChange(e) }}>
                       <option value="">Select</option>
                       <option value="VVIP">VVIP</option>
                       <option value="VIP">VIP</option>
@@ -399,7 +296,7 @@ export default function AddGuest() {
                   </div>
                   <div className="input-group">
                     <label for="state">Guest State</label>
-                    <select id="state">
+                    <select id="state" name='guestAnonymous' onChange={(e) => { handleChange(e) }}>
                       <option value="">Select</option>
                       <option value="ANONYMOUS">Anonymous</option>
                       <option value="NORMAL">Normal</option>
@@ -456,7 +353,7 @@ export default function AddGuest() {
               <form className='add-guest-form py-3 relative flex flex-col flex-wrap gap-2 min-h-[99%]' >
                 <div className='flex gap-2 absolute right-0 top-0'>
                   <button onClick={handlePrevious}> <ArrowCircleLeftIcon /> &nbsp; Go back </button>
-                  <button className='add-btn hidden' onClick={() => handleAddCar(false)}> <AddCircleIcon /> &nbsp; Add car</button>
+                  {/* <button className='add-btn hidden' onClick={() => handleAddCar(false)}> <AddCircleIcon /> &nbsp; Add car</button> */}
                 </div>
 
                 <div className="entry-card">
@@ -477,132 +374,161 @@ export default function AddGuest() {
                 <div className="flex flex-wrap justify-between min-h-[20%] gap-2">
                   {
                     state?.entryMode !== 'BY FOOT' ? (
-                    <>
-                      <div class="entry-card">
-                        <fieldset class='flex flex-col gap-3 p-5'>
-                          <legend>Car & driver</legend>
-                          <div class="input-group min-w-[100%]">
-                            <label for="gnames">Car plate <span class='text-red-400'>*</span></label>
-                            <input
-                              type="text"
-                              id="plateNumber"
-                              name="plateNumber"
-                              value={car?.plateNumber}
-                              onChange={(e) => { handleCarChange(e) }}
-                              placeholder="Car Plate Number"
-                            />
-                          </div>
-                          <div class="input-group min-w-[100%]">
-                            <label for="gnames">Model</label>
-                            <input
-                              type="text"
-                              id="model"
-                              name="vehicleModel"
-                              value={car?.vehicleModel}
-                              onChange={(e) => { handleCarChange(e) }}
-                              placeholder="Car Model"
-                            />
-                          </div>
-                          <div class="input-group min-w-[100%]">
-                            <label for="gnames">Color</label>
-                            <input
-                              type="text"
-                              id="color"
-                              name="vehicleColour"
-                              value={car?.vehicleColour}
-                              onChange={(e) => { handleCarChange(e) }}
-                              placeholder="Car Color"
-                            />
-                          </div>
-                          <div class={!(selfDrive) ? '' : 'hidden'}>
-                            <label for="gnames">Driver name <span class='text-red-400'>*</span></label>
-                            <input class="input-group min-w-[100%]"
-                              type="text"
-                              id="driver"
-                              name="driverFullName"
-                              value={car?.driverFullName}
-                              onChange={(e) => { handleCarChange(e) }}
-                              placeholder="Car Driver"
-                            />
-                          </div>
-                          <div class={!(selfDrive) ? '' : 'hidden'}>
-                            <label for="gnames">Driver contact <span class='text-red-400'>*</span></label>
-                            <input class="input-group min-w-[100%]"
-                              type="text"
-                              id="contact"
-                              name="driverPhoneNumber"
-                              value={car?.driverPhoneNumber}
-                              onChange={(e) => { handleCarChange(e) }}
-                              placeholder="Driver phone number"
-                            />
-                          </div>
-                          <div class={!(selfDrive) ? '' : 'hidden'}>
-                            <label for="gnames">Driver Id numberrrr</label>
-                            <input class="input-group min-w-[100%]"
-                              type="text"
-                              id="id"
-                              name="driverNationId"
-                              value={car?.driverNationId}
-                              onChange={(e) => { handleCarChange(e) }}
-                              placeholder="Driver National Id"
-                            />
-                          </div>
-                          <div className='w-1/3 flex justify-center'>
-                            <button
-                              type='button'
-                              onClick={() => { appendCar() }}
-                              className='w-4/5 bg-main-color hover:bg-main-color-onhover cursor-pointer px-4 py-2 font-medium text-center text-white transition-colors duration-200 rounded-md bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 dark:focus:ring-offset-darker'>
-                              {loading ? (
-                                <div className='flex items-center space-x-2'>
-                                  <Loader />
-                                  <span>appending car</span>
-                                </div>
-                              ) : (
-                                "add car"
-                              )}
-                            </button>
-                          </div>
-                        </fieldset>
-                      </div>
-
-
-                      <div class="entry-card p-5">
-                        <div className='grid gap-x-10 gap-y-3 grid-cols-3 border-t border-b'>
-                          <div className='flex flex-col'>
-                            <label>Car plate</label>
-                            <span className='text-sm text-gray-600'>RAG088D</span>
-                          </div>
-                          <div className='flex flex-col'>
-                            <label>Model</label>
-                            <span className='text-sm text-gray-600'>RAG088D</span>
-                          </div>
-                          <div className='flex flex-col'>
-                            <label>Color</label>
-                            <span className='text-sm text-gray-600'>RAG088D</span>
-                          </div>
-                          <div className='flex flex-col'>
-                            <label>Driver</label>
-                            <span className='text-sm text-gray-600'>RAG088D</span>
-                          </div>
-                          <div className='flex flex-col'>
-                            <label>Driver Contact</label>
-                            <span className='text-sm text-gray-600'>RAG088D</span>
-                          </div>
-                          <div className='flex flex-col'>
-                            <label>Id Number</label>
-                            <span className='text-sm text-gray-600'>RAG088D</span>
-                          </div>
+                      <>
+                        <div class="entry-card">
+                          <fieldset class='flex flex-col gap-3 p-5'>
+                            <legend>Car & driver</legend>
+                            <div class="input-group min-w-[100%]">
+                              <label for="gnames">Car plate <span class='text-red-400'>*</span></label>
+                              <input
+                                type="text"
+                                id="plateNumber"
+                                name="plateNumber"
+                                value={car?.plateNumber}
+                                onChange={(e) => { handleCarChange(e) }}
+                                placeholder="Car Plate Number"
+                              />
+                            </div>
+                            <div class="input-group min-w-[100%]">
+                              <label for="gnames">Model</label>
+                              <input
+                                type="text"
+                                id="model"
+                                name="vehicleModel"
+                                value={car?.vehicleModel}
+                                onChange={(e) => { handleCarChange(e) }}
+                                placeholder="Car Model"
+                              />
+                            </div>
+                            <div class="input-group min-w-[100%]">
+                              <label for="gnames">Color</label>
+                              <input
+                                type="text"
+                                id="color"
+                                name="vehicleColour"
+                                value={car?.vehicleColour}
+                                onChange={(e) => { handleCarChange(e) }}
+                                placeholder="Car Color"
+                              />
+                            </div>
+                            <div class={!(selfDrive) ? '' : 'hidden'}>
+                              <label for="gnames">Driver name <span class='text-red-400'>*</span></label>
+                              <input class="input-group min-w-[100%]"
+                                type="text"
+                                id="driver"
+                                name="driverFullName"
+                                value={car?.driverFullName}
+                                onChange={(e) => { handleCarChange(e) }}
+                                placeholder="Car Driver"
+                              />
+                            </div>
+                            <div class={!(selfDrive) ? '' : 'hidden'}>
+                              <label for="gnames">Driver contact <span class='text-red-400'>*</span></label>
+                              <input class="input-group min-w-[100%]"
+                                type="text"
+                                id="contact"
+                                name="driverPhoneNumber"
+                                value={car?.driverPhoneNumber}
+                                onChange={(e) => { handleCarChange(e) }}
+                                placeholder="Driver phone number"
+                              />
+                            </div>
+                            <div class={!(selfDrive) ? '' : 'hidden'}>
+                              <label for="gnames">Driver Id numberrrr</label>
+                              <input class="input-group min-w-[100%]"
+                                type="text"
+                                id="id"
+                                name="driverNationId"
+                                value={car?.driverNationId}
+                                onChange={(e) => { handleCarChange(e) }}
+                                placeholder="Driver National Id"
+                              />
+                            </div>
+                            <div className='w-1/3 flex justify-center'>
+                              <button
+                                type='button'
+                                onClick={() => { appendCar() }}
+                                className='w-4/5 bg-main-color hover:bg-main-color-onhover cursor-pointer px-4 py-2 font-medium text-center text-white transition-colors duration-200 rounded-md bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 dark:focus:ring-offset-darker'>
+                                {loading ? (
+                                  <div className='flex items-center space-x-2'>
+                                    <Loader />
+                                    <span>appending car</span>
+                                  </div>
+                                ) : (
+                                  "add car"
+                                )}
+                              </button>
+                            </div>
+                          </fieldset>
                         </div>
-                      </div>
-                    </>
+
+
+                        <div class="entry-card p-5">
+                          {
+                            state?.transportation?.map((item, index) => (
+                              <div className='grid gap-x-10 gap-y-3 grid-cols-3 border-t border-b'>
+                                <div className='flex flex-col'>
+                                  <label>Car plate</label>
+                                  <span className='text-sm text-gray-600'>{item.plateNumber ?? 'N/A'}</span>
+                                </div>
+                                <div className='flex flex-col'>
+                                  <label>Model</label>
+                                  <span className='text-sm text-gray-600'>{item.vehicleModel ?? 'N/A'}</span>
+                                </div>
+                                <div className='flex flex-col'>
+                                  <label>Color</label>
+                                  <span className='text-sm text-gray-600'>{item.vehicleColour ?? 'N/A'}</span>
+                                </div>
+                                {
+                                  item?.driverFullName ? (
+                                    <div className='flex flex-col'>
+                                      <label>Driver</label>
+                                      <span className='text-sm text-gray-600'>{item.driverFullName}</span>
+                                    </div>
+                                  ) : ''
+                                }
+                                {
+                                  item?.driverPhoneNumber ? (
+                                    <div className='flex flex-col'>
+                                      <label>Driver Contact</label>
+                                      <span className='text-sm text-gray-600'>{item.driverPhoneNumber}</span>
+                                    </div>
+                                  ) : ''
+                                }
+                                {
+                                  item?.driverNationId ? (
+                                    <div className='flex flex-col'>
+                                      <label>Id Numbere</label>
+                                      <span className='text-sm text-gray-600'>{item.driverNationId}</span>
+                                    </div>
+                                  ) : ''
+                                }
+
+
+                              </div>
+                            ))
+                          }
+                        </div>
+                      </>
                     ) : ''
                   }
                 </div>
 
                 <div className="input-row">
                   <div className="input-group">
-                    <button className="btn-add-guest" type="button">
-                      Add Guest
+                    <button
+                      type='button'
+                      disabled={loading}
+                      onClick={(e) => { handleSubmit(e) }}
+                      className='w-4/5 bg-main-color hover:bg-main-color-onhover cursor-pointer px-4 py-2 font-medium text-center text-white transition-colors duration-200 rounded-md bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 dark:focus:ring-offset-darker'>
+                      {loading ? (
+                        <div className='flex items-center space-x-2'>
+                          <Loader />
+                          <span>Adding...</span>
+                        </div>
+                      ) : (
+                        "Add Guest"
+                      )}
                     </button>
                   </div>
                 </div>

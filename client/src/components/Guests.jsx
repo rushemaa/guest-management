@@ -1,11 +1,30 @@
 import LeftNav from './Leftnav';
-import React from 'react';
+import React, { useEffect } from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import Alert from './feedback/Alert';
+import { BASE_URL } from '../utils/constants';
+import axios from 'axios';
 
 
 export default function Guests() {
+
+
+  const getGuests = (page) => {
+    axios.get(BASE_URL + `/guest/findAll/visitStatus/ALL/page/${page}`)
+      .then(res => {
+        setGates([...res.data.data])
+      })
+      .catch(error => {
+        dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+      })
+  }
+
+  useEffect(() => {
+    getGuests(1)
+  }, [])
   return (
     <div className="App">
+      <Alert />
       <div className="left-side">
         <LeftNav />
       </div>
@@ -20,7 +39,7 @@ export default function Guests() {
             <div className='flex flex-nowrap gap-2'><label>To:</label> <input type='date' className='px-2' /></div>
           </div>
           <div>
-            <input type='search' placeholder='search for guest' className='p-2 bg-gray-100 rounded-md' style={{width: '300px', boxShadow: '0 0 2px black'}} />
+            <input type='search' placeholder='search for guest' className='p-2 bg-gray-100 rounded-md' style={{ width: '300px', boxShadow: '0 0 2px black' }} />
           </div>
         </div>
         <div className="list py-10">
