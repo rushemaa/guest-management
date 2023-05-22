@@ -487,7 +487,8 @@ export default function AddGuest() {
                             <input
                               type="text"
                               id="plateNumber"
-                              name="plate"
+                              name="plateNumber"
+                              value={car?.plateNumber}
                               onChange={(e) => { handleCarChange(e) }}
                               placeholder="Car Plate Number"
                             />
@@ -498,6 +499,7 @@ export default function AddGuest() {
                               type="text"
                               id="model"
                               name="vehicleModel"
+                              value={car?.vehicleModel}
                               onChange={(e) => { handleCarChange(e) }}
                               placeholder="Car Model"
                             />
@@ -508,6 +510,7 @@ export default function AddGuest() {
                               type="text"
                               id="color"
                               name="vehicleColour"
+                              value={car?.vehicleColour}
                               onChange={(e) => { handleCarChange(e) }}
                               placeholder="Car Color"
                             />
@@ -518,6 +521,7 @@ export default function AddGuest() {
                               type="text"
                               id="driver"
                               name="driverFullName"
+                              value={car?.driverFullName}
                               onChange={(e) => { handleCarChange(e) }}
                               placeholder="Car Driver"
                             />
@@ -528,6 +532,7 @@ export default function AddGuest() {
                               type="text"
                               id="contact"
                               name="driverPhoneNumber"
+                              value={car?.driverPhoneNumber}
                               onChange={(e) => { handleCarChange(e) }}
                               placeholder="Driver phone number"
                             />
@@ -538,6 +543,7 @@ export default function AddGuest() {
                               type="text"
                               id="id"
                               name="driverNationId"
+                              value={car?.driverNationId}
                               onChange={(e) => { handleCarChange(e) }}
                               placeholder="Driver National Id"
                             />
