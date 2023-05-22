@@ -473,6 +473,7 @@ export default function AddGuest() {
                 <div className="flex flex-wrap justify-between min-h-[20%] gap-2" ref={CarContainerRef} onClick={handleTest}>
                   {
                     state?.entryMode !== 'BY FOOT' ? (
+                    <>
                       <div class="entry-card">
                         <fieldset class='flex flex-col gap-3 p-5'>
                           <legend>Car & driver</legend>
@@ -547,6 +548,37 @@ export default function AddGuest() {
                           </div>
                         </fieldset>
                       </div>
+
+
+                      <div class="entry-card p-5">
+                        <div className='grid gap-x-10 gap-y-3 grid-cols-3 border-t border-b'>
+                          <div className='flex flex-col'>
+                            <label>Car plate</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                          <div className='flex flex-col'>
+                            <label>Model</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                          <div className='flex flex-col'>
+                            <label>Color</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                          <div className='flex flex-col'>
+                            <label>Driver</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                          <div className='flex flex-col'>
+                            <label>Driver Contact</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                          <div className='flex flex-col'>
+                            <label>Id Number</label>
+                            <span className='text-sm text-gray-600'>RAG088D</span>
+                          </div>
+                        </div>
+                      </div>
+                    </>
                     ) : ''
                   }
                 </div>
