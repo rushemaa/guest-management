@@ -12,7 +12,7 @@ import NButton from './buttons/NButton';
 export default function AddGuest() {
   const dispatch = useDispatch()
   const [state, setState] = useState({ entryMode: 'BY FOOT', transportation: [] });
-  const [car, setCar] = useState(0);
+  const [car, setCar] = useState({});
   const [gates, setGates] = useState()
   const [selfDrive, isSelfDrive] = useState();
   const [loading, isLoading] = useState(false);
@@ -25,13 +25,17 @@ export default function AddGuest() {
   };
 
   const appendCar = () => {
-    setState({ ...state, transportation: [...transportation, { ...car }] })
+    console.log('appending car')
+    console.log(car);
+    setState({ ...state, transportation: [...state?.transportation, { ...car }] })
     console.log(state)
+    setCar({})
   }
 
   const handleCarChange = (e) => {
     const { name, value } = e.target;
-    setCar({ ...state, [name]: value });
+    setCar({ ...car, "type": state?.entryMode, [name]: value });
+    console.log(car)
   };
 
   const handleCar = (e) => {
@@ -470,7 +474,7 @@ export default function AddGuest() {
                   </fieldset>
                 </div>
 
-                <div className="flex flex-wrap justify-between min-h-[20%] gap-2" ref={CarContainerRef} onClick={handleTest}>
+                <div className="flex flex-wrap justify-between min-h-[20%] gap-2">
                   {
                     state?.entryMode !== 'BY FOOT' ? (
                     <>
@@ -540,11 +544,23 @@ export default function AddGuest() {
                               name="driverNationId"
                               value={car?.driverNationId}
                               onChange={(e) => { handleCarChange(e) }}
-                              placeholder="Driver National Iddddddd"
+                              placeholder="Driver National Id"
                             />
                           </div>
                           <div className='w-1/3 flex justify-center'>
-                            <NButton value={'add car'} onsubmit={'Appending car'} status={loading} onclick={appendCar} />
+                            <button
+                              type='button'
+                              onClick={() => { appendCar() }}
+                              className='w-4/5 bg-main-color hover:bg-main-color-onhover cursor-pointer px-4 py-2 font-medium text-center text-white transition-colors duration-200 rounded-md bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 dark:focus:ring-offset-darker'>
+                              {loading ? (
+                                <div className='flex items-center space-x-2'>
+                                  <Loader />
+                                  <span>appending car</span>
+                                </div>
+                              ) : (
+                                "add car"
+                              )}
+                            </button>
                           </div>
                         </fieldset>
                       </div>
