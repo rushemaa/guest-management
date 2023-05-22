@@ -12,10 +12,14 @@ const createGuest = async (req, res, next) => {
   try {
     let user = req.user.user;
     let dt = req.body;
+    if (["NORMAL", "ANONYMOUS"].includes(dt.guestStatus))
+      throw "guest status is required";
     if (!["HOST", "ADMIN"].includes(user.role)) throw "access denied 😡";
+    if (!dt.date || dt.date === "") throw "please enter guest visit date";
+    if (!dt.time || dt.time === "") throw "please enter guest visit time";
     let tim = `${dt.date} ${dt.time}`;
     if (new Date(tim) - new Date() < 0)
-      throw "guest arrival date can not be in paast";
+      throw "guest arrival date can not be in past";
     if (!dt.transportation) throw "transport mean is required";
 
     if (!Array.isArray(dt.transportation))
@@ -66,9 +70,11 @@ const createGuest = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     if (
-      ["SequelizeUniqueConstraintError", "SequelizeValidationError"].includes(
-        err.name
-      )
+      [
+        "SequelizeUniqueConstraintError",
+        "SequelizeValidationError",
+        "ValidationErrorItem",
+      ].includes(err.name)
     ) {
       err = err.errors[0].message;
     } else if (
@@ -322,6 +328,7 @@ const getGuest = async (req, res, next) => {
         },
       });
     } else {
+      // if()
       where = { randomReference: randomReference };
       let findGuest = await Guest.findOne({
         where,
@@ -332,6 +339,7 @@ const getGuest = async (req, res, next) => {
             "createdAt",
             "updatedAt",
             "deletedAt",
+            "guestKeys",
             "id",
           ],
         },
@@ -377,7 +385,7 @@ const getGuest = async (req, res, next) => {
 const updateVisitStatus = async (req, res, next) => {
   try {
     let user = req.user.user;
-    let { randomReference, visitStatus } = req.body;
+    let { randomReference, visitStatus, date, time } = req.body;
 
     let where = { randomReference: randomReference };
 
@@ -396,6 +404,14 @@ const updateVisitStatus = async (req, res, next) => {
     } else {
       if (!["PENDING", "POSTPONED"].includes(visitStatus))
         throw "Invalid visit status 😡";
+      if (visitStatus === "POSTPONED") {
+        if (!date || date === "") throw "please enter guest visit date";
+        if (!time || time === "") throw "please enter guest visit time";
+        let tim = `${date} ${time}`;
+        if (new Date(tim) - new Date() < 0)
+          throw "guest arrival date can not be in past";
+        visitStatus = "PENDING";
+      }
     }
     let searchGuest = await Guest.findOne({ where });
     if (!searchGuest || searchGuest === null) throw "No guest found 🥺";
@@ -404,6 +420,143 @@ const updateVisitStatus = async (req, res, next) => {
       status: "ok",
       message: "Guest visit status has been successfully updated ✅",
     });
+  } catch (err) {
+    console.log(err);
+    if (
+      ["SequelizeUniqueConstraintError", "SequelizeValidationError"].includes(
+        err.name
+      )
+    ) {
+      err = err.errors[0].message;
+    } else if (
+      ["SequelizeDatabaseError", "SequelizeForeignKeyConstraintError"].includes(
+        err.name
+      )
+    ) {
+      err = err.parent.sqlMessage;
+    }
+
+    res.status(412).json({ status: "fail", message: err });
+  }
+};
+
+const guestSearch = async (req, res, next) => {
+  try {
+    let user = req.user.user;
+
+    let where = "";
+    let attributes = "";
+    let { dateTo, dateFrom, key } = req.body;
+
+    if (user.role === "GATE") {
+      let getUserGate = await Account.findOne({
+        where: { username: user.username, status: "ACTIVE" },
+        attributes: ["GateId", "id"],
+      });
+      if (getUserGate)
+        where = {
+          [Op.substring]: { guestKeys: key },
+          gate: getUserGate.GateId,
+          date: { [Op.gte]: new Date() },
+        };
+      let result = await Guest.findAndCountAll({
+        where,
+        attributes: {
+          exclude: [
+            "id",
+            "gate",
+            "HostId",
+            "createdAt",
+            "updatedAt",
+            "deletedAt",
+            "guestKeys",
+          ],
+        },
+        include: [
+          {
+            model: Host,
+            required: true,
+            attributes: { exclude: ["id"] },
+          },
+          {
+            model: Gate,
+            required: true,
+            attributes: {
+              exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
+            },
+          },
+        ],
+      });
+      let data = result.rows.map((x) => {
+        return {
+          guestFullName:
+            x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx xxx" : x.guestFullName,
+          guestIdNumber:
+            x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx" : x.guestIdNumber,
+          guestPhone:
+            x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx" : x.guestPhone,
+          comeFrom: x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx" : x.comeFrom,
+          time: x.time,
+          date: x.date,
+          receiverFullName: x.receiverFullName,
+          receiverPhoneNumber: x.receiverPhoneNumber,
+          conditions: x.conditions,
+          guestStatus: x.guestStatus,
+          comment: x.comment,
+          visitStatus: x.visitStatus,
+          guestAnonymous: x.guestAnonymous,
+          randomReference: x.randomReference,
+          Host: {
+            hostName: x.Host.hostName,
+            callSign: x.Host.callSign,
+          },
+          Gate: {
+            gate: x.Gate.gate,
+          },
+        };
+      });
+      return res.status(200).json({
+        status: "ok",
+        data: data,
+        totalPages: Math.ceil(result.count / size),
+      });
+    } else if (["HOST", "SECURITY OFFICER", "ADMIN"].includes(user.role)) {
+      where = {
+        date: { [Op.between]: [dateFrom, dateTo] },
+      };
+      // if(!key){}
+      let data = await Guest.findAll({
+        where,
+        attributes: {
+          exclude: [
+            "gate",
+            "Hostid",
+            "createdAt",
+            "updatedAt",
+            "deletedAt",
+            "guestKeys",
+            "id",
+          ],
+        },
+        include: [
+          {
+            model: Gate,
+            required: false,
+            attributes: {
+              exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
+            },
+          },
+          {
+            model: Host,
+            required: false,
+            attributes: {
+              exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
+            },
+          },
+        ],
+      });
+      return res.status(200).json({ status: "ok", data: data });
+    }
   } catch (err) {
     console.log(err);
     if (
