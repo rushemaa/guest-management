@@ -76,7 +76,7 @@ const Login = () => {
               handleChange(e);
             }}
           />
-          <NButton value={'Sign in'} onsubmit={'Signing in...'} status={status} onclick={handleLogin}/>
+          <NButton value={'Sign in'} onsubmit={'Signing in...'} status={authState === "loggingIn..."} onclick={handleLogin} />
         </form>
       </div>
     </div>

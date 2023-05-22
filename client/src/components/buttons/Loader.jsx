@@ -4,8 +4,8 @@ import { ImSpinner6 } from "react-icons/im";
 
 function Loader() {
   return (
-    <div role='status' className='my- animate-spin'>
-      <IconContext.Provider value={{ size: '1.5em', color: '#005d55' }}>
+    <div role='status' className='animate-spin'>
+      <IconContext.Provider value={{ size: '1.5em', color: 'white' }}>
         <ImSpinner6 />
       </IconContext.Provider>
       <span className='sr-only'>Loading...</span>
