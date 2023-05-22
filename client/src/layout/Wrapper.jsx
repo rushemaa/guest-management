@@ -5,7 +5,7 @@ const Wrapper = ({ title, toggle, isToggled, children }) => {
     return (
         <div
             style={{ backdropFilter: 'blur(5px)', zIndex: '1002' }}
-            className={`fixed flex items-center align-center bg-opacity-50 z-50 show w-full md:inset-0 md:h-full ${toggle ? '' : ' hidden'
+            className={`fixed flex items-center align-center bg-opacity-50 z-50 show w-full md:inset-0 min-h-full ${toggle ? '' : ' hidden'
                 }`}>
             <div className='relative w-full h-full flex justify-center p-4 items-center md:h-screen'>
                 <div className='relative bg-white rounded-lg w-1/3 shadow '>
@@ -20,7 +20,7 @@ const Wrapper = ({ title, toggle, isToggled, children }) => {
                             <ImCross />
                         </button>
                     </div>
-                    <div className='mx-4 my-2'>
+                    <div className='sm:mx-0 mx-4 my-2' style={{ minWidth: '400px'}}>
                         {children}
                     </div>
 

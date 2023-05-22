@@ -31,16 +31,15 @@ export default function Admin() {
       </div>
       <div className="right-side">
         <div className='flex justify-between'>
-          <h1 className='font-semibold text-2xl'>System Users</h1>
+          <h1 className='font-semibold text-2xl w-1/2'>System Users</h1>
           <AddBtn toggler={isToggled} name={"Add User"} />
         </div>
         <div className="list py-10">
           <table className='report-table'>
-            <tr><th>#</th><th>Names</th><th>Instutition</th><th>Role</th><th>Action</th></tr>
+            <tr><th>#</th><th>Names</th><th>Institution</th><th>Role</th><th>Action</th></tr>
             {
               users?.map((user, index) => (
-                <tr><td>{user.id}</td><td>{user.fullName}</td><td>{user.institution}</td><td>{user.role}</td><td>Actions</td></tr>
-
+                <tr><td>{index + 1}</td><td>{user.fullName}</td><td>{user.institution}</td><td>{user.role}</td><td>Actions</td></tr>
               ))
             }
             <tr><td colSpan={5} className='text-right'>Total: {users?.length}</td></tr>

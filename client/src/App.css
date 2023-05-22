@@ -49,7 +49,8 @@
 
 .left-side {
   background-color: #015c55;
-  height: 115vh;
+  min-height: 100svh;
+  height: auto;
   width: 350px;
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
@@ -60,7 +61,8 @@
 
 .right-side {
   background-color: #fff;
-  height: 100vh;
+  min-height: 100svh;
+  height: auto;
   width: 70%;
   display: flex;
   flex-direction: column;
@@ -79,6 +81,10 @@
   line-height: calc(11px * 1.618);
   min-width: 33.33%;
   width: auto
+}
+.entry-card {
+  width: 49%;
+  height: fit-content;
 }
 
 @media (width <= 768px) {
@@ -111,5 +117,8 @@
   }
   .left-side:focus-within .user-logo, .left-side:focus-within .u-info, .left-side:focus-within .nav-links h4 {
     display: block;
+  }
+  .entry-card {
+    width: 99%!important;
   }
 }
