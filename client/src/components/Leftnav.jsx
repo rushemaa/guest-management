@@ -8,7 +8,7 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import { logout } from '../service/reducers/AuthSlice';
 import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 export default function LeftNav() {
@@ -17,13 +17,26 @@ export default function LeftNav() {
   const dispatch = useDispatch()
   const auth = JSON.parse(sessionStorage.getItem(import.meta.env.VITE_APP_AUTH));
   const navigate = useNavigate()
+  const [links, setLinks] = useState([])
+
+  const navLinks = [
+    { url: '/home', ref: 'dashboard', icon: <DashboardIcon className="icons" />, privacy: 'private' },
+    { url: '/add-guest', ref: 'Add guest', icon: <GroupAddIcon className="icons" />, privacy: 'private' },
+    { url: '/guests', ref: 'View guests', icon: <FormatListBulletedIcon className="icons" />, privacy: 'public' },
+    { url: '/admin', ref: 'Admin', icon: <SettingsApplicationsIcon className="icons" />, privacy: 'private' },
+  ]
 
 
   useEffect(() => {
     if (auth === null) {
       navigate('/')
+    } {
+      if (auth?.user?.role === 'GATE')
+        setLinks([...navLinks.filter(item => item.privacy === 'public')])
+      else
+        setLinks([...navLinks])
     }
-  }, [auth])
+  }, [])
   return (
     <>
       <div className="user-info">
@@ -34,44 +47,22 @@ export default function LeftNav() {
           <DehazeRoundedIcon style={{ color: '#fff' }} sx={{ fontSize: 30 }} />
         </div>
         <div className="u-info">
-          <h3>Kabera Joe</h3>
-          <h4>Manager</h4>
+          <h3>{auth?.user?.fullName}</h3>
+          <h4>{auth?.user?.role}</h4>
         </div>
       </div>
 
       <ul className="nav-links">
-        <li>
-          <a href="home">
-            <div className="icon">
-              <DashboardIcon className="icons" />
-            </div>
-            <h4 className="nav-name">Dashboard</h4>
-          </a>
-        </li>
-        <li>
-          <a href="add-guest">
-            <div className="icon">
-              <GroupAddIcon className="icons" />
-            </div>
-            <h4 className="nav-name">Add Guest</h4>
-          </a>
-        </li>
-        <li>
-          <a href="guests">
-            <div className="icon">
-              <FormatListBulletedIcon className="icons" />
-            </div>
-            <h4 className="nav-name">View Guest</h4>
-          </a>
-        </li>
-        <li>
-          <a href="admin">
-            <div className="icon">
-              <SettingsApplicationsIcon className="icons" />
-            </div>
-            <h4 className="nav-name">Admin</h4>
-          </a>
-        </li>
+        {links?.map((item, key) => (
+          <li key={key}>
+            <a href={item.url}>
+              <div className="icon">
+                {item.icon}
+              </div>
+              <h4 className="nav-name">{item.ref}</h4>
+            </a>
+          </li>
+        ))}
         <li onClick={() => dispatch(logout())}>
           <a href="#">
             <div className="icon">
