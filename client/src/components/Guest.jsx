@@ -4,6 +4,8 @@ import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import LeftNav from './Leftnav';
 import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
+import CreateTwoToneIcon from '@mui/icons-material/CreateTwoTone';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 const handleBackBtn = () => {
   window.location.href='/guests'
@@ -22,19 +24,21 @@ const Guest = () => {
     });
   }, [])
 
-  console.log(details)
-
   return (
     <div className="App">
       <div className="left-side">
         <LeftNav />
       </div>
       <div className="right-side px-5">
-        <div className='flex gap-x-5 pt-20 items-center'>
+        <div className='flex gap-x-5 pt-20 flex-wrap items-center'>
           <button className='flex justify-center align-center rounded-full' onClick={handleBackBtn}>
             <ArrowBackRoundedIcon />
           </button>
           <h1 className='font-semibold text-2xl'>Guest information</h1>
+          <div className='information flex items-center justify-end flex-row gap-x-7 grow text-center'>
+            <CreateTwoToneIcon className='cursor-pointer hover:scale-110 hover:text-green-800' />
+            <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 hover:text-green-800' />
+          </div>
         </div>
         <div className="list py-10 grid gap-10 grid-cols-3">
           <div className='information flex flex-col'>
@@ -89,38 +93,57 @@ const Guest = () => {
 
         {/* Entrance details */}
         <div className='flex gap-x-5 pt-2 items-center'>
-          <h2 className='font-semibold text-xl'>Entrance information</h2>
-        </div>
-        <div className='information pt-5 flex flex-col'>
-          <label className='text-lg font-normal'>Entrance mode</label>
-          <span className='pl-1 text-gray-500'>{details?.visitStatus}</span>
-        </div>
-        <div className="list py-5 grid gap-10 grid-cols-3">
-          <div className='information flex flex-col'>
-            <label className='text-lg font-normal'>Car plate</label>
-            <span className='pl-1 text-gray-500'>{details?.visitStatus}</span>
-          </div>
-          <div className='information flex flex-col'>
-            <label className='text-lg font-normal'>Car Model</label>
-            <span className='pl-1 text-gray-500'>{details?.visitStatus}</span>
-          </div>
-          <div className='information flex flex-col'>
-            <label className='text-lg font-normal'>Car color</label>
-            <span className='pl-1 text-gray-500'>{details?.visitStatus}</span>
-          </div>
-          <div className='information flex flex-col'>
-            <label className='text-lg font-normal'>Driver names</label>
-            <span className='pl-1 text-gray-500'>{details?.visitStatus}</span>
-          </div>
-          <div className='information flex flex-col'>
-            <label className='text-lg font-normal'>Driver ID number</label>
-            <span className='pl-1 text-gray-500'>{details?.visitStatus}</span>
-          </div>
-          <div className='information flex flex-col'>
-            <label className='text-lg font-normal'>Driver Contact</label>
-            <span className='pl-1 text-gray-500'>{details?.visitStatus}</span>
-          </div>
-        </div>
+          <h2 className='font-semibold text-xl'><u>Entrance information</u></h2>
+        </div> 
+        {
+          details?.Transports?.map((transport, i) => 
+            <div className="list py-5 grid gap-x-10 gap-y-6 grid-cols-3 border-b border-gray-300">
+              <div className='information flex flex-col'>
+                <label className='text-lg font-normal'>{transport?.transportType}</label>
+                <span className='text-gray-500'>Entrance mode</span>
+              </div>
+              <div></div>
+              <div className='information flex items-center flex-row gap-x-7'>
+                <CreateTwoToneIcon className='cursor-pointer hover:scale-110 hover:text-green-800' />
+                <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 hover:text-green-800' />
+              </div>
+              {
+                (transport?.plateNumber || transport?.vehicleModel || transport?.vehicleColour) &&
+                <>
+                  <div className='information flex flex-col'>
+                    <label className='text-lg font-normal'>Car plate</label>
+                    <span className='pl-1 text-gray-500'>{transport?.plateNumber}</span>
+                  </div>
+                  <div className='information flex flex-col'>
+                    <label className='text-lg font-normal'>Car Model</label>
+                    <span className='pl-1 text-gray-500'>{transport?.vehicleModel}</span>
+                  </div>
+                  <div className='information flex flex-col'>
+                    <label className='text-lg font-normal'>Car color</label>
+                    <span className='pl-1 text-gray-500 flex items-center'><div className={"w-[15px] h-[10px] rounded-full bg-"+ transport?.vehicleColour.toLowerCase() +"-500"}></div> &nbsp; {transport?.vehicleColour}</span>
+                  </div>
+                </>
+              }
+              {
+                (transport?.driverFullName || transport?.driverNationId || transport?.driverPhoneNumber) &&
+                <>
+                  <div className='information flex flex-col'>
+                    <label className='text-lg font-normal'>Driver names</label>
+                    <span className='pl-1 text-gray-500'>{transport?.driverFullName}</span>
+                  </div>
+                  <div className='information flex flex-col'>
+                    <label className='text-lg font-normal'>Driver ID number</label>
+                    <span className='pl-1 text-gray-500'>{transport?.driverNationId}</span>
+                  </div>
+                  <div className='information flex flex-col'>
+                    <label className='text-lg font-normal'>Driver Contact</label>
+                    <span className='pl-1 text-gray-500'>{transport?.driverPhoneNumber}</span>
+                  </div>
+                </>
+              }
+            </div>
+          )
+        }
       </div>
     </div>
   )
