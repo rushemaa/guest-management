@@ -1,6 +1,9 @@
 const sequelize = require("../../configuration/dbConfig");
 const Sequelize = require("sequelize");
 const { password_hashing } = require("../../tools/auth");
+const Gate = require("../Gates/GateModel");
+const Guest = require("../Guest/GuestModel");
+// const Gate = require("../Gates/GateModel");
 const { DataTypes } = Sequelize;
 
 const Account = sequelize.define(
@@ -79,6 +82,9 @@ const Account = sequelize.define(
     timestamps: true,
   }
 );
+
+Gate.hasMany(Account);
+Account.belongsTo(Gate);
 
 Account.sync({ alter: false, force: false })
   .then(() => {

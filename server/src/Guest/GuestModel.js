@@ -2,7 +2,6 @@ const sequelize = require("../../configuration/dbConfig");
 const Sequelize = require("sequelize");
 const Gate = require("../Gates/GateModel");
 const Host = require("../Host/HostModel");
-const { getRansadomString } = require("../../tools/functions");
 const { DataTypes } = Sequelize;
 
 const Guest = sequelize.define(
@@ -106,11 +105,11 @@ const Guest = sequelize.define(
       allowNull: true,
     },
     visitStatus: {
-      type: DataTypes.ENUM("PENDING", "VISITED", "POSTPONED"),
+      type: DataTypes.ENUM("CANCEL", "PENDING", "VISITED", "POSTPONED"),
       defaultValue: "PENDING",
       validate: {
         isIn: {
-          args: [["PENDING", "VISITED", "POSTPONED"]],
+          args: [["CANCEL", "PENDING", "VISITED", "POSTPONED"]],
           msg: "Invalid visit status",
         },
       },

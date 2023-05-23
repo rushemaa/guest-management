@@ -9,6 +9,9 @@ guestRoutes
   .post("/create", guestController.createGuest)
   .get("/findAll/visitStatus/:visitStatus/page/:1", guestController.findAll)
   .put("/updateVisitStatus", guestController.updateVisitStatus)
-  .get("/getGuest/:randomReference", guestController.getGuest);
+  .get("/getGuest/:randomReference", guestController.getGuest)
+  .get("/search", guestController.guestSearch)
+  .delete("/delete/:randomReference", guestController.deleteGuest)
+  .delete("/deleteTransport/:id", guestController.deleteTransport);
 
 module.exports = guestRoutes;

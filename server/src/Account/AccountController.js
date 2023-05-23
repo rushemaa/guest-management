@@ -47,7 +47,7 @@ const  createAccount = async (req, res, next) => {
     if (
       ["SequelizeUniqueConstraintError", "SequelizeValidationError"].includes(
         err.name
-      )``
+      )
     )
       err = err.errors[0].message;
     res.status(412).json({ status: "fail", message: err });

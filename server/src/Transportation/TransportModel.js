@@ -56,6 +56,8 @@ const Transport = sequelize.define(
   }
 );
 
+
+
 Transport.belongsTo(Guest);
 Guest.hasMany(Transport);
 

@@ -12,7 +12,7 @@ const createGuest = async (req, res, next) => {
   try {
     let user = req.user.user;
     let dt = req.body;
-    if (["NORMAL", "ANONYMOUS"].includes(dt.guestStatus))
+    if (!["VIP", "VVIP", "NORMAL", "SENIOR OFFICIAL"].includes(dt.guestStatus))
       throw "guest status is required";
     if (!["HOST", "ADMIN"].includes(user.role)) throw "access denied 😡";
     if (!dt.date || dt.date === "") throw "please enter guest visit date";
@@ -20,6 +20,11 @@ const createGuest = async (req, res, next) => {
     let tim = `${dt.date} ${dt.time}`;
     if (new Date(tim) - new Date() < 0)
       throw "guest arrival date can not be in past";
+
+    if (!dt.gate || (await Gate.count({ where: { id: dt.gate } })) === 0)
+      throw "Please select correct gate";
+    if (!dt.HostId || (await Host.count({ where: { id: dt.HostId } })) === 0)
+      throw "Please select correct host";
     if (!dt.transportation) throw "transport mean is required";
 
     if (!Array.isArray(dt.transportation))
@@ -264,7 +269,7 @@ const getGuest = async (req, res, next) => {
         attributes: {
           exclude: [
             "gate",
-            "Hostid",
+            "HostId",
             "createdAt",
             "updatedAt",
             "deletedAt",
@@ -284,6 +289,13 @@ const getGuest = async (req, res, next) => {
             required: false,
             attributes: {
               exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
+            },
+          },
+          {
+            model: Transport,
+            required: false,
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "deletedAt"],
             },
           },
         ],
@@ -335,7 +347,7 @@ const getGuest = async (req, res, next) => {
         attributes: {
           exclude: [
             "gate",
-            "Hostid",
+            "HostId",
             "createdAt",
             "updatedAt",
             "deletedAt",
@@ -356,6 +368,13 @@ const getGuest = async (req, res, next) => {
             required: false,
             attributes: {
               exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
+            },
+          },
+          {
+            model: Transport,
+            required: false,
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "deletedAt"],
             },
           },
         ],
@@ -402,7 +421,7 @@ const updateVisitStatus = async (req, res, next) => {
       where.gate = getUserGate.GateId;
       where.visitStatus = "PENDING";
     } else {
-      if (!["PENDING", "POSTPONED"].includes(visitStatus))
+      if (!["CANCEL", "PENDING", "POSTPONED"].includes(visitStatus))
         throw "Invalid visit status 😡";
       if (visitStatus === "POSTPONED") {
         if (!date || date === "") throw "please enter guest visit date";
@@ -453,13 +472,22 @@ const guestSearch = async (req, res, next) => {
         where: { username: user.username, status: "ACTIVE" },
         attributes: ["GateId", "id"],
       });
-      if (getUserGate)
+      if (getUserGate) {
         where = {
-          [Op.substring]: { guestKeys: key },
+          guestKeys: {
+            [Op.or]: {
+              [Op.like]: `%${key}%`,
+              [Op.eq]: `${key}`,
+              [Op.startsWith]: `${key},`,
+              [Op.endsWith]: `,${key}`,
+              [Op.substring]: `,${key},`,
+            },
+          },
           gate: getUserGate.GateId,
           date: { [Op.gte]: new Date() },
         };
-      let result = await Guest.findAndCountAll({
+      }
+      let result = await Guest.findAll({
         where,
         attributes: {
           exclude: [
@@ -469,7 +497,6 @@ const guestSearch = async (req, res, next) => {
             "createdAt",
             "updatedAt",
             "deletedAt",
-            "guestKeys",
           ],
         },
         include: [
@@ -487,7 +514,8 @@ const guestSearch = async (req, res, next) => {
           },
         ],
       });
-      let data = result.rows.map((x) => {
+
+      let data = result.map((x) => {
         return {
           guestFullName:
             x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx xxx" : x.guestFullName,
@@ -518,13 +546,53 @@ const guestSearch = async (req, res, next) => {
       return res.status(200).json({
         status: "ok",
         data: data,
-        totalPages: Math.ceil(result.count / size),
       });
     } else if (["HOST", "SECURITY OFFICER", "ADMIN"].includes(user.role)) {
-      where = {
-        date: { [Op.between]: [dateFrom, dateTo] },
-      };
-      // if(!key){}
+      if (key && dateFrom && dateTo) {
+        where = {
+          guestKeys: {
+            [Op.or]: {
+              [Op.like]: `%${key}%`,
+              [Op.eq]: `${key}`,
+              [Op.startsWith]: `${key},`,
+              [Op.endsWith]: `,${key}`,
+              [Op.substring]: `,${key},`,
+            },
+          },
+          date: { [Op.between]: [dateFrom, dateTo] },
+        };
+      } else if (!key && dateFrom && dateTo && key !== null) {
+        where = {
+          date: { [Op.between]: [dateFrom, dateTo] },
+        };
+      } else if (key && dateFrom && !dateTo) {
+        where = {
+          guestKeys: {
+            [Op.or]: {
+              [Op.like]: `%${key}%`,
+              [Op.eq]: `${key}`,
+              [Op.startsWith]: `${key},`,
+              [Op.endsWith]: `,${key}`,
+              [Op.substring]: `,${key},`,
+            },
+          },
+          date: { [Op.gte]: dateFrom },
+        };
+      } else if (key && !dateFrom && dateTo) {
+        where = {
+          guestKeys: {
+            [Op.or]: {
+              [Op.like]: `%${key}%`,
+              [Op.eq]: `${key}`,
+              [Op.startsWith]: `${key},`,
+              [Op.endsWith]: `,${key}`,
+              [Op.substring]: `,${key},`,
+            },
+          },
+          date: { [Op.lte]: dateTo },
+        };
+      }
+      // if(key && !dateFrom && !dateTo)
       let data = await Guest.findAll({
         where,
         attributes: {
@@ -576,4 +644,96 @@ const guestSearch = async (req, res, next) => {
     res.status(412).json({ status: "fail", message: err });
   }
 };
-module.exports = { createGuest, findAll, updateVisitStatus, getGuest };
+const deleteGuest = async (req, res, next) => {
+  try {
+    let user = req.user.user;
+    let { randomReference } = req.params;
+    if (!["HOST", "ADMIN"].includes(user.role)) throw "Access denied 😡";
+
+    if (!randomReference || randomReference === null)
+      throw "random reference number is required";
+    const findGuest = await Guest.findOne({
+      where: {
+        randomReference: randomReference,
+        visitStatus: { [Op.ne]: "VISITED" },
+      },
+    });
+
+    if (!findGuest || findGuest === null) throw "No guest found 😡";
+    findGuest.destroy();
+    return res
+      .status(200)
+      .json({ status: "ok", message: "data was successfully deleted ✅" });
+  } catch (err) {
+    console.log(err);
+    if (
+      ["SequelizeUniqueConstraintError", "SequelizeValidationError"].includes(
+        err.name
+      )
+    ) {
+      err = err.errors[0].message;
+    } else if (
+      ["SequelizeDatabaseError", "SequelizeForeignKeyConstraintError"].includes(
+        err.name
+      )
+    ) {
+      err = err.parent.sqlMessage;
+    }
+
+    res.status(412).json({ status: "fail", message: err });
+  }
+};
+const deleteTransport = async (req, res) => {
+  try {
+    let user = req.user.user;
+
+    let { id } = req.params;
+
+    if (!id || id === null) throw "Transport id is required";
+
+    if (!["HOST", "ADMIN"].includes(user.role)) throw "Access denied 😡";
+    let findTransport = await Transport.findByPk(id);
+
+    if (!findTransport || findTransport === null) throw "No Transport found";
+
+    let findAllTransport = await Transport.count({
+      where: { GuestId: findTransport.GuestId },
+    });
+
+    if (findAllTransport <= 1) throw "you can not delete all transport";
+
+    findTransport.destroy({ force: true });
+
+    return res
+      .status(200)
+      .json({ status: "ok", message: "Transport was successfully deleted" });
+  } catch (err) {
+    console.log(err);
+    if (
+      ["SequelizeUniqueConstraintError", "SequelizeValidationError"].includes(
+        err.name
+      )
+    ) {
+      err = err.errors[0].message;
+    } else if (
+      ["SequelizeDatabaseError", "SequelizeForeignKeyConstraintError"].includes(
+        err.name
+      )
+    ) {
+      err = err.parent.sqlMessage;
+    }
+
+    res.status(412).json({ status: "fail", message: err });
+  }
+};
+
+const updateGuest = async (req, res) => {};
+module.exports = {
+  createGuest,
+  findAll,
+  updateVisitStatus,
+  getGuest,
+  guestSearch,
+  deleteGuest,
+  deleteTransport,
+};

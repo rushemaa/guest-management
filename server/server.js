@@ -26,7 +26,6 @@ const gatesRoutes = require("./src/Gates/GateRoutes");
 const guestRoutes = require("./src/Guest/GuestRouters");
 const hostRoutes = require("./src/Host/HostRoutes");
 
-
 app.use("/account", accountRoutes);
 app.use("/gate", gatesRoutes);
 app.use("/guest", guestRoutes);
