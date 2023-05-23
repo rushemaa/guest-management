@@ -185,7 +185,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
             </label>
           </div>
         </div>
-        <div className='flex justify-center'>
+        <div className='flex justify-center mt-10'>
           <SubmitButton value={"Save"} onsubmit={"Saving..."} status={loading} />
         </div>
       </form>
