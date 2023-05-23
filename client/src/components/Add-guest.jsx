@@ -1,13 +1,5 @@
 import LeftNav from './Leftnav';
 import '../css/Add-guest.css';
-<<<<<<< HEAD
-import React, { useState } from 'react';
-
-export default function AddGuest() {
-  const [state, setState] = useState();
-  const [status, setStatus] = useState();
-  const [loading, isLoading] = useState(false)
-=======
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { useDispatch } from 'react-redux';
@@ -20,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import SubmitButton from './buttons/SubmitButton';
 import ActionWrapper from './buttons/ActionWrapper';
 import CheckAccess from './CheckAccess';
+import Loader from './buttons/Loader';
 
 export default function AddGuest() {
   const dispatch = useDispatch()
@@ -37,7 +30,7 @@ export default function AddGuest() {
     setState({ ...state, [name]: value });
     if (name === 'HostId') {
       console.log(hosts?.filter(item => item.id == value))
-      setState({ ...state, callSign: hosts?.filter(item => item.id == value)[0].callSign });
+      setState({ ...state, [name]: value, callSign: hosts?.filter(item => item.id == value)[0].callSign });
     }
     console.log(state);
   };
@@ -102,6 +95,7 @@ export default function AddGuest() {
         e.target.reset()
       }
     } catch (error) {
+      isLoading(false);
       dispatch(setMessage({ type: 'error', message: error.response.data.message }))
     }
   }
@@ -142,185 +136,11 @@ export default function AddGuest() {
     setState({ ...state, entryMode: value === '1' ? "BY FOOT" : value === '2' ? 'SELF DRIVING' : 'DRIVER' })
   }
 
->>>>>>> 6fe2aa828f351eb0696f40a20da8b2c8efd54ec9
   return (
     <div className="App">
       <div className="left-side">
         <LeftNav />
       </div>
-<<<<<<< HEAD
-      <div className="right-side">
-        <h1 className='font-semibold text-2xl w-full text-center'>Guest Registration</h1>
-        <form className="add-guest-form py-3">
-          <fieldset>
-            <legend>Guest</legend>
-
-            <div className="input-row">
-              <div className="input-group">
-                <label for="gnames">Guest Names</label>
-                <input
-                  type="text"
-                  id="gnames"
-                  name="gnames"
-                  placeholder="Full name"
-                />
-              </div>
-              <div className="input-group">
-                <label for="idnum">ID</label>
-                <input
-                  type="text"
-                  id="idnum"
-                  name="idnum"
-                  placeholder="ID number or Passport"
-                />
-              </div>
-            </div>
-
-            <div className="input-row">
-              <div className="input-group">
-                <label for="phone">Phone</label>
-                <input
-                  type="text"
-                  id="phone"
-                  name="phone"
-                  placeholder="Phone Number"
-                />
-              </div>
-              <div className="input-group">
-                <label for="from">From</label>
-                <input
-                  type="text"
-                  id="from"
-                  name="idnum"
-                  placeholder="Comming From"
-                />
-              </div>
-            </div>
-
-            <div className="input-row">
-              <div className="input-group">
-                <label for="date">Date</label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  placeholder="Pick a date"
-                />
-              </div>
-              <div className="input-group">
-                <label for="time">Time</label>
-                <input
-                  type="time"
-                  id="time"
-                  name="time"
-                  placeholder="Pick a time"
-                />
-              </div>
-            </div>
-          </fieldset>
-
-          <div className="input-row">
-            <div className="input-group">
-              <label for="host">Host</label>
-              <select id="host">
-                <option value="">Select a Host</option>
-                <option value="HDI">HDI</option>
-                <option value="DHDI">DHDI</option>
-                <option value="DI Admin">DI Admin</option>
-                <option value="DI LO">DI LO</option>
-              </select>
-            </div>
-            <div className="input-group">
-              <label for="call">Call sign</label>
-              <input
-                type="text"
-                id="call"
-                name="call"
-                placeholder="Call sign"
-              />
-            </div>
-          </div>
-
-          <fieldset>
-            <legend>Receiver</legend>
-
-            <div className="input-row">
-              <div className="input-group">
-                <label for="receiver">Receiver Names</label>
-                <input
-                  type="text"
-                  id="receiver"
-                  name="receiver"
-                  placeholder="Full name"
-                />
-              </div>
-              <div className="input-group">
-                <label for="rphone">Phone</label>
-                <input
-                  type="text"
-                  id="rphone"
-                  name="rphone"
-                  placeholder="Phone number"
-                />
-              </div>
-            </div>
-          </fieldset>
-
-          <div className="input-row">
-            <div className="input-group">
-              <label for="status">Status</label>
-              <select id="status">
-                <option value="">Select</option>
-                <option value="VVIP">VVIP</option>
-                <option value="VIP">VIP</option>
-                <option value="Senior official">Senior official</option>
-                <option value="Normal">Normal</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="input-row">
-            <div className="input-group">
-              <label for="gate">Gate</label>
-              <select id="gate">
-                <option value="">Select Entance</option>
-                <option value="VI">VIP Gate</option>
-                <option value="Visitor Gate">Visitor Gate</option>
-                <option value="G2 Or Liaison Gate">G2 Or Liaison Gate</option>
-                <option value="Staff Gate">Staff Gate</option>
-                <option value="Migration">Migration</option>
-              </select>
-            </div>
-            <div className="input-group">
-              <label for="conditions">Conditions</label>
-              <select id="conditions">
-                <option value="">Select Conditions</option>
-                <option value="Full search">Full search</option>
-                <option value="Mirror on car and Body and luggage  scan">
-                  Mirror on car and Body and luggage scan
-                </option>
-                <option value="Mirror on car and luggage scan only">
-                  Mirror on car and luggage scan only
-                </option>
-                <option value="Mirror on car-luggage scan and work-through">
-                  Mirror on car-luggage scan and work-through
-                </option>
-                <option value="luggage scan only">luggage scan only</option>
-                <option value="no search no scan">No search No scan</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="input-row">
-            <div className="input-group">
-              <button className="btn-add-guest" type="button">
-                Add Guest
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-=======
       <CheckAccess>
         <div className="right-side">
           <h1 className='font-semibold text-2xl w-full text-center' id='top'>Guest Registration</h1>
@@ -628,10 +448,10 @@ export default function AddGuest() {
                                   type='button'
                                   onClick={() => { appendCar() }}
                                   className='w-4/5 bg-main-color hover:bg-main-color-onhover cursor-pointer px-4 py-2 font-medium text-center text-white transition-colors duration-200 rounded-md bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 dark:focus:ring-offset-darker'>
-                                  {loading ? (
+                                  {false ? (
                                     <div className='flex items-center space-x-2'>
                                       <Loader />
-                                      <span>appending car</span>
+                                      <span>appending car...</span>
                                     </div>
                                   ) : (
                                     "add car"
@@ -728,7 +548,6 @@ export default function AddGuest() {
 
         </div>
       </CheckAccess>
->>>>>>> 6fe2aa828f351eb0696f40a20da8b2c8efd54ec9
     </div>
   );
 }
