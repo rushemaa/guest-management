@@ -47,6 +47,15 @@ export default function Guests() {
     }
   }, [guests])
 
+  const handleSearch = (value) => {
+    value !== '' ?
+      setFilterRes([...guests.filter(x => x.guestFullName.toLowerCase().includes(value.toLowerCase()))])
+      :
+      setFilterRes([...guests])
+  }
+
+
+
   useEffect(() => {
     getGuests(1)
   }, [])
@@ -69,7 +78,7 @@ export default function Guests() {
             <div className='flex flex-nowrap gap-2'><label>To:</label> <input type='date' name='to' onChange={handleChange} className='px-2' /></div>
           </div>
           <div>
-            <input type='search' placeholder='search for guest' className='p-2 bg-gray-100 rounded-md' style={{ width: '300px', boxShadow: '0 0 2px black' }} />
+            <input type='search' onChange={(e) => { handleSearch(e.target.value) }} placeholder='search for guest' className='p-2 bg-gray-100 rounded-md' style={{ width: '300px', boxShadow: '0 0 2px black' }} />
           </div>
         </div>
         <div className="list py-10">
