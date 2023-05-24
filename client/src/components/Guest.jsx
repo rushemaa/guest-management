@@ -26,7 +26,7 @@ const Guest = () => {
   const userType = JSON.parse(sessionStorage.getItem(import.meta.env.VITE_APP_AUTH))?.user?.role;
   
   const handleBackBtn = () => {
-    navigate('/guests');
+    navigate('/guests/PENDING');
   }
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const Guest = () => {
     axios.delete(BASE_URL + `/guest/delete/${id}`).then(
       res => {
         dispatch(setMessage({ type: 'success', message: res.data.message }));
-        setTimeout(() => navigate("/guests"), 1000);
+        setTimeout(() => navigate("/guests/PENDING"), 1000);
       }
     ).catch(error => {
       dispatch(setMessage({ type: 'error', message: error.response.data.message }))
@@ -55,6 +55,7 @@ const Guest = () => {
   const handleTransportDelete = (id) => {
     axios.delete(BASE_URL + `/guest/deleteTransport/${id}`).then(
       res => {
+        setTimeout(() => getGuest(), 50)
         dispatch(setMessage({ type: 'success', message: res.data.message }));
       }
     ).catch(error => {
@@ -69,6 +70,7 @@ const Guest = () => {
     }
     axios.put(BASE_URL + '/guest/updateVisitStatus', data).then(res => {
       if (res.status === 200)
+      setTimeout(() => getGuest(), 50)
         dispatch(setMessage({ type: 'success', message: res.data.message }));
     }).catch(error => {
       dispatch(setMessage({ type: 'error', message: error.response.data.message }))
@@ -158,7 +160,7 @@ const Guest = () => {
         {/* Entrance details */}
         <div className='flex gap-x-5 pt-2 items-center justify-between'>
           <h2 className='font-semibold text-xl'><u>Entrance information</u></h2>
-          {(userType !== 'GATE') && <button className='hover:bg-main-color-onhover transition-all duration-300' onClick={() => { isCEditToggled(true) }}><AddCircleTwoToneIcon /> &nbsp; Add Car</button>}
+          {(userType !== 'GATE') && <button className='hover:bg-main-color-onhover transition-all duration-300' onClick={() => { isCEditToggled(true) }}><AddCircleTwoToneIcon /> &nbsp; Add Entrance</button>}
         </div>
         {
           details?.Transports?.map((transport, i) =>
