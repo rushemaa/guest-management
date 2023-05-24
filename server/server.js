@@ -25,11 +25,14 @@ const accountRoutes = require("./src/Account/AccountRoutes");
 const gatesRoutes = require("./src/Gates/GateRoutes");
 const guestRoutes = require("./src/Guest/GuestRouters");
 const hostRoutes = require("./src/Host/HostRoutes");
+const dashboardRoutes = require("./src/Dashboard/dashboardRoute");
 
-app.use("/account", accountRoutes);
-app.use("/gate", gatesRoutes);
-app.use("/guest", guestRoutes);
-app.use("/host", hostRoutes);
+app
+  .use("/account", accountRoutes)
+  .use("/gate", gatesRoutes)
+  .use("/guest", guestRoutes)
+  .use("/host", hostRoutes)
+  .use("/dashboard", dashboardRoutes);
 
 app.get("/test", (req, res) => {
   res.send("API testing ...");

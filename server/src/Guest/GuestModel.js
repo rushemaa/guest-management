@@ -105,11 +105,11 @@ const Guest = sequelize.define(
       allowNull: true,
     },
     visitStatus: {
-      type: DataTypes.ENUM("CANCEL", "PENDING", "VISITED", "POSTPONED"),
+      type: DataTypes.ENUM("CANCELED", "PENDING", "VISITED", "POSTPONED"),
       defaultValue: "PENDING",
       validate: {
         isIn: {
-          args: [["CANCEL", "PENDING", "VISITED", "POSTPONED"]],
+          args: [["CANCELED", "PENDING", "VISITED", "POSTPONED"]],
           msg: "Invalid visit status",
         },
       },

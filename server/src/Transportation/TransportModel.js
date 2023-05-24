@@ -24,7 +24,7 @@ const Transport = sequelize.define(
       allowNull: false,
       validate: {
         isIn: {
-          args: [["SELF DRIVE", "DRIVER", "BY FOOT"]],
+          args: [["SELF DRIVING", "DRIVER", "BY FOOT"]],
           msg: "Please select way of transport",
         },
       },
@@ -34,7 +34,7 @@ const Transport = sequelize.define(
       allowNull: true,
       validate: {
         validator: function (e) {
-          if (this.transportType === "DRIVER") {
+          if (this.transportType === "DRIVER" && (!e || e === null)) {
             throw new Error("driver name can not empty");
           }
         },
@@ -55,8 +55,6 @@ const Transport = sequelize.define(
     freezeTableName: true,
   }
 );
-
-
 
 Transport.belongsTo(Guest);
 Guest.hasMany(Transport);

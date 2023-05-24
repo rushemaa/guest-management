@@ -12,6 +12,9 @@ guestRoutes
   .get("/getGuest/:randomReference", guestController.getGuest)
   .get("/search", guestController.guestSearch)
   .delete("/delete/:randomReference", guestController.deleteGuest)
-  .delete("/deleteTransport/:id", guestController.deleteTransport);
+  .delete("/deleteTransport/:id", guestController.deleteTransport)
+  .post("/addTransport", guestController.addTransport)
+  .put("/update", guestController.updateGuest)
+  .put("/updateTransport", guestController.updateTransport);
 
 module.exports = guestRoutes;

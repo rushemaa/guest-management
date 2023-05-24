@@ -121,7 +121,7 @@ const getAllAccount = async (req, res, next) => {
     let size = 20;
     let result = await Account.findAndCountAll({
       attributes: {
-        exclude: ["createdAt", "updatedAt", "deletedAt", "gateId"],
+        exclude: ["createdAt", "updatedAt", "deletedAt", "gateId","password"],
       },
       offset: page * size,
       limit: size,

@@ -156,12 +156,12 @@ const findAll = async (req, res) => {
       let data = result.rows.map((x) => {
         return {
           guestFullName:
-            x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx xxx" : x.guestFullName,
+            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestFullName,
           guestIdNumber:
-            x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx" : x.guestIdNumber,
+            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestIdNumber,
           guestPhone:
-            x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx" : x.guestPhone,
-          comeFrom: x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx" : x.comeFrom,
+            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestPhone,
+          comeFrom: x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.comeFrom,
           time: x.time,
           date: x.date,
           receiverFullName: x.receiverFullName,
@@ -190,7 +190,7 @@ const findAll = async (req, res) => {
       where = {
         visitStatus:
           visitStatus === "ALL"
-            ? ["PENDING", "POSTPONED", "VISITED"]
+            ? ["CANCELED", "PENDING", "POSTPONED", "VISITED"]
             : visitStatus,
         date: { [Op.gte]: new Date() },
       };
@@ -281,21 +281,21 @@ const getGuest = async (req, res, next) => {
             model: Gate,
             required: false,
             attributes: {
-              exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
+              exclude: ["createdAt", "updatedAt", "deletedAt"],
             },
           },
           {
             model: Host,
             required: false,
             attributes: {
-              exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
+              exclude: ["createdAt", "updatedAt", "deletedAt"],
             },
           },
           {
             model: Transport,
             required: false,
             attributes: {
-              exclude: ["createdAt", "updatedAt", "deletedAt"],
+              exclude: ["createdAt", "updatedAt", "deletedAt", "GuestId"],
             },
           },
         ],
@@ -306,19 +306,19 @@ const getGuest = async (req, res, next) => {
         data: {
           guestFullName:
             findGuest.guestAnonymous === "ANONYMOUS"
-              ? "xxxxxxx xxx"
+              ? "ANONYMOUS"
               : findGuest.guestFullName,
           guestIdNumber:
             findGuest.guestAnonymous === "ANONYMOUS"
-              ? "xxxxxxx"
+              ? "ANONYMOUS"
               : findGuest.guestIdNumber,
           guestPhone:
             findGuest.guestAnonymous === "ANONYMOUS"
-              ? "xxxxxxx"
+              ? "ANONYMOUS"
               : findGuest.guestPhone,
           comeFrom:
             findGuest.guestAnonymous === "ANONYMOUS"
-              ? "xxxxxxx"
+              ? "ANONYMOUS"
               : findGuest.comeFrom,
           time: findGuest.time,
           date: findGuest.date,
@@ -337,6 +337,7 @@ const getGuest = async (req, res, next) => {
           Gate: {
             gate: findGuest.Gate.gate,
           },
+          Transports: findGuest.Transports,
         },
       });
     } else {
@@ -360,21 +361,21 @@ const getGuest = async (req, res, next) => {
             model: Gate,
             required: false,
             attributes: {
-              exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
+              exclude: ["createdAt", "updatedAt", "deletedAt"],
             },
           },
           {
             model: Host,
             required: false,
             attributes: {
-              exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
+              exclude: ["createdAt", "updatedAt", "deletedAt"],
             },
           },
           {
             model: Transport,
             required: false,
             attributes: {
-              exclude: ["createdAt", "updatedAt", "deletedAt"],
+              exclude: ["createdAt", "updatedAt", "deletedAt", "GuestId"],
             },
           },
         ],
@@ -421,7 +422,9 @@ const updateVisitStatus = async (req, res, next) => {
       where.gate = getUserGate.GateId;
       where.visitStatus = "PENDING";
     } else {
-      if (!["CANCEL", "PENDING", "POSTPONED"].includes(visitStatus))
+      if (
+        !["CANCELED", "PENDING", "POSTPONED", "VISITED"].includes(visitStatus)
+      )
         throw "Invalid visit status 😡";
       if (visitStatus === "POSTPONED") {
         if (!date || date === "") throw "please enter guest visit date";
@@ -727,7 +730,218 @@ const deleteTransport = async (req, res) => {
   }
 };
 
-const updateGuest = async (req, res) => {};
+const addTransport = async (req, res) => {
+  try {
+    let user = req.user.user;
+
+    if (!["HOST", "ADMIN"].includes(user.role)) throw "Access denied 😡";
+
+    let dt = req.body;
+
+    if (
+      !dt.randomReference ||
+      dt.randomReference === null ||
+      (await Guest.count({
+        where: {
+          randomReference: dt.randomReference,
+          visitStatus: { [Op.notIn]: ["VISITED", "CANCELED"] },
+        },
+      })) === 0
+    )
+      throw "please enter correct guest randon reference key ";
+
+    if (!dt.type || !["SELF DRIVING", "DRIVER", "BY FOOT"].includes(dt.type))
+      throw "Invalid transport type";
+
+    if (
+      ["SELF DRIVING", "DRIVER"].includes(dt.type) &&
+      (!dt.plateNumber || dt.plateNumber === null)
+    )
+      throw "plate number is required";
+    let guest = await Guest.findOne({
+      where: {
+        randomReference: dt.randomReference,
+        visitStatus: { [Op.notIn]: ["VISITED", "CANCELED"] },
+      },
+    });
+    let obj = {
+      transportType: dt.type,
+      GuestId: guest.id,
+    };
+    if (["SELF DRIVING", "DRIVER"].includes(dt.type)) {
+      if (
+        dt.type === "DRIVER" &&
+        (!dt.driverFullName || dt.driverFullName === null)
+      )
+        throw "driver full name is required";
+      obj.plateNumber = dt.plateNumber;
+      obj.vehicleColour = dt.vehicleColour || null;
+      obj.vehicleModel = dt.vehicleModel || null;
+      obj.driverFullName = dt.driverFullName || null;
+      obj.driverNationId = dt.driverNationId || null;
+      obj.driverPhoneNumber = dt.driverPhoneNumber || null;
+    }
+    let savedTransport = await Transport.create(obj);
+    delete savedTransport.GuestId;
+    return res.status(200).json({ status: "ok", data: savedTransport });
+  } catch (err) {
+    console.log(err);
+    if (
+      ["SequelizeUniqueConstraintError", "SequelizeValidationError"].includes(
+        err.name
+      )
+    ) {
+      err = err.errors[0].message;
+    } else if (
+      ["SequelizeDatabaseError", "SequelizeForeignKeyConstraintError"].includes(
+        err.name
+      )
+    ) {
+      err = err.parent.sqlMessage;
+    }
+
+    res.status(412).json({ status: "fail", message: err });
+  }
+};
+
+const updateGuest = async (req, res) => {
+  try {
+    let user = req.user.user;
+
+    if (!["HOST", "ADMIN"].includes(user.role)) throw "Access denied 😡";
+
+    let dt = req.body;
+
+    if (!["VIP", "VVIP", "NORMAL", "SENIOR OFFICIAL"].includes(dt.guestStatus))
+      throw "guest status is required";
+    if (!dt.randomReference || dt.randomReference === null)
+      throw "Please enter guest random reference key";
+    let findGuest = await Guest.findOne({
+      where: {
+        randomReference: dt.randomReference,
+        visitStatus: { [Op.notIn]: ["VISITED", "CANCELED"] },
+      },
+    });
+
+    if (!findGuest || findGuest === null) throw "No guest found 🥵";
+
+    if (!dt.date || dt.date === "") throw "please enter guest visit date";
+    if (!dt.time || dt.time === "") throw "please enter guest visit time";
+    let tim = `${dt.date} ${dt.time}`;
+    if (new Date(tim) - new Date() < 0)
+      throw "guest arrival date can not be in past";
+
+    if (!dt.gate || (await Gate.count({ where: { id: dt.gate } })) === 0)
+      throw "Please select correct gate";
+    if (!dt.HostId || (await Host.count({ where: { id: dt.HostId } })) === 0)
+      throw "Please select correct host";
+    if (
+      dt.guestAnonymous &&
+      !["ANONYMOUS", "NORMAL"].includes(dt.guestAnonymous)
+    )
+      throw "Invalid guest anonymous";
+    if (
+      dt.guestStatus &&
+      !["VIP", "VVIP", "NORMAL", "SENIOR OFFICIAL"].includes(dt.guestStatus)
+    )
+      throw "Invalid guest Status";
+    if (
+      dt.visitStatus &&
+      !["PENDING", "VISITED", "POSTPONED"].includes(dt.visitStatus)
+    )
+      throw "Invalid guest visit Status";
+    findGuest.update(dt);
+    return res
+      .status(200)
+      .json({ status: "ok", message: "Guest was succesfully updated" });
+  } catch (err) {
+    console.log(err);
+
+    if (["SequelizeUniqueConstraintError"].includes(err.name)) {
+      err = err.errors[0].message;
+    } else if (
+      ["SequelizeDatabaseError", "SequelizeForeignKeyConstraintError"].includes(
+        err.name
+      )
+    ) {
+      err = err.parent.sqlMessage;
+    }
+    res.status(412).json({ status: "fail", message: err });
+  }
+};
+const updateTransport = async (req, res) => {
+  try {
+    let user = req.user.user;
+
+    if (!["HOST", "ADMIN"].includes(user.role)) throw "Access denied 😡";
+
+    let dt = req.body;
+
+    if (!dt.id || dt.id === null) throw "Please enter valid id 🥵";
+
+    if (!dt.type || !["SELF DRIVING", "DRIVER", "BY FOOT"].includes(dt.type))
+      throw "Invalid transport type";
+
+    if (
+      ["SELF DRIVING", "DRIVER"].includes(dt.type) &&
+      (!dt.plateNumber || dt.plateNumber === null)
+    )
+      throw "plate number is required";
+
+    let findTransport = await Transport.findOne({
+      where: {
+        id: dt.id,
+      },
+      include: {
+        model: Guest,
+        required: true,
+        where: { visitStatus: { [Op.notIn]: ["VISITED", "CANCELED"] } },
+        attributes: ["randomReference", "visitStatus"],
+      },
+    });
+    let obj = {
+      transportType: dt.type,
+      plateNumber: null,
+      vehicleColour: null,
+      vehicleModel: null,
+      driverFullName: null,
+      driverNationId: null,
+      driverPhoneNumber: null,
+    };
+    if (["SELF DRIVING", "DRIVER"].includes(dt.type)) {
+      if (
+        dt.type === "DRIVER" &&
+        (!dt.driverFullName || dt.driverFullName === null)
+      )
+        throw "driver full name is required";
+      obj.plateNumber = dt.plateNumber;
+      obj.vehicleColour = dt.vehicleColour || null;
+      obj.vehicleModel = dt.vehicleModel || null;
+      obj.driverFullName = dt.driverFullName || null;
+      obj.driverNationId = dt.driverNationId || null;
+      obj.driverPhoneNumber = dt.driverPhoneNumber || null;
+    }
+
+    let savedTransport = findTransport.update(obj, { where: { id: dt.id } });
+
+    return res
+      .status(200)
+      .json({ status: "ok", data: "transport was updated" });
+  } catch (err) {
+    console.log(err);
+
+    if (["SequelizeUniqueConstraintError"].includes(err.name)) {
+      err = err.errors[0].message;
+    } else if (
+      ["SequelizeDatabaseError", "SequelizeForeignKeyConstraintError"].includes(
+        err.name
+      )
+    ) {
+      err = err.parent.sqlMessage;
+    }
+    res.status(412).json({ status: "fail", message: err });
+  }
+};
 module.exports = {
   createGuest,
   findAll,
@@ -736,4 +950,7 @@ module.exports = {
   guestSearch,
   deleteGuest,
   deleteTransport,
+  addTransport,
+  updateGuest,
+  updateTransport,
 };
