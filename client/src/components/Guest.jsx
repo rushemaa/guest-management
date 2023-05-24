@@ -74,8 +74,8 @@ const Guest = () => {
     });
   }
 
-  const handleEdit = (type) => {
-    setCurrent({ ...details })
+  const handleEdit = (type, data) => {
+    setCurrent({ ...data })
     type === 'guest' ? isGEditToggled(true) : isCEditToggled(true)
   }
 
