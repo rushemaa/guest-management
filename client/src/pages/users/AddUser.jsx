@@ -52,6 +52,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
           e.target.reset()
         }
       } catch (error) {
+        isLoading(false);
         dispatch(setMessage({ type: 'error', message: error.response.data.message }))
       }
     } else {
@@ -64,6 +65,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
           dispatch(setMessage({ type: 'success', message: "User Updated successfully" }))
         }
       } catch (error) {
+        isLoading(false);
         dispatch(setMessage({ type: 'error', message: error.response.data.message }))
       }
     }
@@ -136,6 +138,27 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
             </select>
           </div>
         </div>
+        <div className={`flex justify-status ml-5 ${state?.id ? '' : 'hidden'}`}>
+          <div className="relative z-0 w-2/5 mb-2 group">
+            <select
+              name='status'
+              value={state?.status}
+              onChange={(e) => { handleChange(e) }}
+              className='block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer'
+              placeholder=' '
+              required=''
+              autoComplete='off'>
+              <option className='text-xs' value=''>
+                Select status *
+              </option>
+              {['ACTIVE', 'PENDING', 'DEACTIVATED'].map((item, key) => (
+                <option key={key} className='text-xs' value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         {
           state?.role === 'GATE' ? (
             <div className='flex justify-start ml-5'>
@@ -161,7 +184,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
             </div>
           ) : ''
         }
-        <div className='flex justify-around'>
+        <div className={`flex justify-around ${state?.id ? 'hidden' : ''}`}>
           <div className="relative z-0 w-2/5 mb-2 group">
             <input type="password" name="password"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none   focus:outline-none focus:ring-0 focus:border-blue-600 peer"

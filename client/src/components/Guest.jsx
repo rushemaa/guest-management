@@ -31,8 +31,7 @@ const Guest = () => {
 
   useEffect(() => {
     getGuest()
-    // console.log('Guest')
-  }, [details])
+  }, [])
 
   const getGuest = () => {
     axios.get(BASE_URL + `/guest/getGuest/${id}`).then(
@@ -69,7 +68,7 @@ const Guest = () => {
       visitStatus: e.target.value
     }
     axios.put(BASE_URL + '/guest/updateVisitStatus', data).then(res => {
-      if (res.status === 200) 
+      if (res.status === 200)
         dispatch(setMessage({ type: 'success', message: res.data.message }));
     }).catch(error => {
       dispatch(setMessage({ type: 'error', message: error.response.data.message }))
@@ -87,7 +86,7 @@ const Guest = () => {
         <LeftNav />
       </div>
       <div className="right-side px-5">
-        <Alert/>
+        <Alert />
         <div className='flex gap-x-5 pt-20 flex-wrap items-center'>
           <button className='flex justify-center align-center rounded-full' onClick={handleBackBtn}>
             <ArrowBackRoundedIcon />
@@ -150,7 +149,7 @@ const Guest = () => {
             <span className='text-gray-500'>
               <select onChange={handleVisitStatusChange}>
                 <option value="PENDING" selected={details?.visitStatus === "PENDING" ? "true" : "false"}>Pending</option>
-                <option value="VISITED"  selected={details?.visitStatus === "VISITED" ? "true" : "false"}>Visited</option>
+                <option value="VISITED" selected={details?.visitStatus === "VISITED" ? "true" : "false"}>Visited</option>
               </select>
             </span>
           </div>
@@ -159,7 +158,7 @@ const Guest = () => {
         {/* Entrance details */}
         <div className='flex gap-x-5 pt-2 items-center justify-between'>
           <h2 className='font-semibold text-xl'><u>Entrance information</u></h2>
-          {(userType !== 'GATE') && <button><AddCircleTwoToneIcon /> &nbsp; Add Car</button>}
+          {(userType !== 'GATE') && <button onClick={() => { isCEditToggled(true) }}><AddCircleTwoToneIcon /> &nbsp; Add Car</button>}
         </div>
         {
           details?.Transports?.map((transport, i) =>
@@ -214,7 +213,7 @@ const Guest = () => {
           )
         }
         <EditGuest toggle={toggleGEdit} isToggled={isGEditToggled} data={current} postOp={getGuest} />
-        <TransportCU toggle={toggleCEdit} isToggled={isCEditToggled} data={current} postOp={getGuest} />
+        <TransportCU toggle={toggleCEdit} isToggled={isCEditToggled} data={current} postOp={getGuest} id={id} />
       </div>
     </div>
   )

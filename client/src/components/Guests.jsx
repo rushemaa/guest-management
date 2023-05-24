@@ -23,15 +23,24 @@ export default function Guests() {
   }
 
   useEffect(() => {
-    getDataInDateInterval(guests, new Date(dateFilter?.from ?? new Date('1970-01-01')), new Date(dateFilter?.to?dateFilter?.to:new Date()))
+    if (!dateFilter?.to)
+      getFrom(guests, new Date(dateFilter?.from ?? new Date('1970-01-01')))
+    else
+      getDataInDateInterval(guests, new Date(dateFilter?.from ?? new Date('1970-01-01')), new Date(dateFilter?.to ? dateFilter?.to : new Date()))
   }, [dateFilter])
 
 
   const getDataInDateInterval = (data, startDate, endDate) => {
-    // console.log(`start date is ${startDate}, end date is ${endDate}`);
     setFilterRes([...data?.filter(item => {
       const itemDate = new Date(item.date);
       return itemDate.getTime() >= startDate.getTime() && itemDate.getTime() <= endDate.getTime();
+    })])
+  }
+
+  const getFrom = (data, startDate) => {
+    setFilterRes([...data?.filter(item => {
+      const itemDate = new Date(item.date);
+      return itemDate.getTime() >= startDate.getTime();
     })])
   }
 
@@ -39,18 +48,12 @@ export default function Guests() {
     axios.get(BASE_URL + `/guest/findAll/visitStatus/${visitStatus}/page/${page}`)
       .then(res => {
         setGuests([...res.data.data])
+        setFilterRes([...res.data.data])
       })
       .catch(error => {
         dispatch(setMessage({ type: 'error', message: error.response.data.message }))
       })
   }
-
-  useEffect(() => {
-    if (guests.length) {
-      setFilterRes([...guests])
-    }
-    // console.log("userType");
-  }, [guests, visitStatus])
 
   const handleSearch = (value) => {
     value !== '' ?
@@ -67,7 +70,7 @@ export default function Guests() {
 
   useEffect(() => {
     getGuests(1)
-  }, [guests, visitStatus])
+  }, [visitStatus])
 
   const handleGuestDelete = (id) => {
     axios.delete(BASE_URL + `/guest/delete/${id}`).then(
@@ -90,13 +93,13 @@ export default function Guests() {
         <div className='flex justify-between items-center flex-wrap gap-y-5'>
           <div className=''>
             <h1 className='font-semibold text-2xl leading-6'>Guests</h1>
-            <label className='font-thin text-sm text-gray-500 leading-3'>We 're/will hosting {filterRes?.length} 
-            <select onChange={handleVisitStatus}>
-              <option value="PENDING">pending guest</option>
-              <option value="CANCELED">cancelled guest</option>
-              <option value="VISITED">visited guest</option>
-              <option value="ALL">all guest status</option>
-            </select></label>
+            <label className='font-thin text-sm text-gray-500 leading-3'>We 're/will hosting {filterRes?.length}
+              <select onChange={handleVisitStatus}>
+                <option value="PENDING">pending guest</option>
+                <option value="CANCELED">cancelled guest</option>
+                <option value="VISITED">visited guest</option>
+                <option value="ALL">all guest status</option>
+              </select></label>
           </div>
           <div className='flex items-center gap-x-10 gap-y-0 flex-wrap'>
             <div className='flex flex-nowrap gap-2'><label>From:</label> <input type='date' name='from' onChange={handleChange} className='px-2' /></div>
@@ -118,7 +121,7 @@ export default function Guests() {
                 <td>{guest.date} {guest.time}</td>
                 <td className='flex gap-x-5 justify-center'>
                   <PreviewTwoToneIcon className='cursor-pointer hover:scale-110' onClick={() => location.href = `guest/${guest.randomReference}`} />
-                  <DeleteTwoToneIcon className='cursor-pointer text-red-800 hover:scale-110' onClick={()=>handleGuestDelete(guest.randomReference)} />
+                  <DeleteTwoToneIcon className='cursor-pointer text-red-800 hover:scale-110' onClick={() => handleGuestDelete(guest.randomReference)} />
                 </td></tr>
             ))}
 

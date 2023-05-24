@@ -1,3 +1,4 @@
+import { Alert } from '@mui/material'
 import React from 'react'
 import { ImCross } from 'react-icons/im'
 
@@ -7,6 +8,7 @@ const Wrapper = ({ title, toggle, isToggled, children }) => {
             style={{ backdropFilter: 'blur(5px)', zIndex: '1002' }}
             className={`fixed flex items-center align-center bg-opacity-50 z-50 show w-full md:inset-0 min-h-full ${toggle ? '' : ' hidden'
                 }`}>
+            <Alert />
             <div className='relative w-full h-full flex justify-center p-4 items-center md:h-screen'>
                 <div className='relative bg-white rounded-lg w-2/5 shadow '>
                     <div className='flex items-center justify-between p-5 border-b rounded-t'>
@@ -20,7 +22,7 @@ const Wrapper = ({ title, toggle, isToggled, children }) => {
                             <ImCross />
                         </button>
                     </div>
-                    <div className='sm:mx-0 mx-4 my-2' style={{ minWidth: '400px'}}>
+                    <div className='sm:mx-0 mx-4 my-2' style={{ minWidth: '400px' }}>
                         {children}
                     </div>
 

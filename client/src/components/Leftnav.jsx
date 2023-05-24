@@ -37,6 +37,16 @@ export default function LeftNav() {
         setLinks([...navLinks])
     }
   }, [])
+
+  const handleLogout = () => {
+    try {
+      dispatch(logout());
+      navigate('/');
+    } catch (error) {
+      dispatch(setMessage({ type: 'error', message: error }))
+
+    }
+  };
   return (
     <>
       <div className="user-info">
@@ -63,7 +73,7 @@ export default function LeftNav() {
             </a>
           </li>
         ))}
-        <li onClick={() => dispatch(logout())}>
+        <li onClick={() => handleLogout()}>
           <a href="#">
             <div className="icon">
               <LogoutIcon className="icons" />

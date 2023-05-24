@@ -510,7 +510,7 @@ export default function AddGuest() {
                                       del={true}
                                       onEdit={() => { handleEditCar(item) }}
                                       onDelete={() => { handleDeleteCar(item) }}
-                                      confirmDeleteMessage="Do you remove this car"
+                                      confirmDeleteMessage="Do you really want to remove this car?"
                                     />
                                   </div>
 

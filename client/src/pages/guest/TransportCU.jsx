@@ -6,18 +6,19 @@ import { useDispatch } from 'react-redux'
 import Wrapper from '../../layout/Wrapper'
 import SubmitButton from '../../components/buttons/SubmitButton'
 
-const TransportCU = ({ toggle, isToggled, data, postOp }) => {
+const TransportCU = ({ toggle, isToggled, data, id, postOp }) => {
   const [state, setState] = useState()
   const [loading, isLoading] = useState(false)
   const dispatch = useDispatch()
 
 
   useEffect(() => {
-    console.log('in transport');
-    console.log(data)
     if (data?.id) {
       setState({ ...data, type: data?.transportType })
+    } else {
+      setState({ randomReference: id })
     }
+
   }, [data])
 
   const handleChange = (e) => {
@@ -30,7 +31,7 @@ const TransportCU = ({ toggle, isToggled, data, postOp }) => {
     isLoading(true)
     if (!state?.id) {
       try {
-        const res = await axios.post(BASE_URL + '/transport/create', { ...state });
+        const res = await axios.post(BASE_URL + '/guest/addTransport', { ...state });
         if (res.status === 200) {
           isLoading(false);
           isToggled(false)
@@ -39,6 +40,7 @@ const TransportCU = ({ toggle, isToggled, data, postOp }) => {
           e.target.reset()
         }
       } catch (error) {
+        isLoading(false);
         dispatch(setMessage({ type: 'error', message: error.response.data.message }))
       }
     } else {
@@ -51,13 +53,14 @@ const TransportCU = ({ toggle, isToggled, data, postOp }) => {
           dispatch(setMessage({ type: 'success', message: "Transport Updated successfully" }))
         }
       } catch (error) {
+        isLoading(false);
         dispatch(setMessage({ type: 'error', message: error.response.data.message }))
       }
     }
   }
   return (
     <Wrapper title={state?.id ? "Update Transport" : "Add Transport"} toggle={toggle} isToggled={isToggled} >
-      <form className='py-3' onSubmit={(e) => handleSubmit(e)}>
+      <form id='CU' className='py-3' onSubmit={(e) => handleSubmit(e)}>
         <div className='flex justify-around'>
           <div className="relative z-0 w-2/5 mb-2 group">
             <select
@@ -149,7 +152,7 @@ const TransportCU = ({ toggle, isToggled, data, postOp }) => {
           </div>
         </div>
         <div className='flex justify-center mt-5'>
-          <SubmitButton value={"Update"} onsubmit={"Updating..."} status={loading} />
+          <SubmitButton value={state?.id?"Update":"Add"} onsubmit={state?.id?"Updating...":"Update"} status={loading} />
         </div>
       </form>
     </Wrapper>
