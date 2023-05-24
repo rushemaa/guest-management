@@ -91,7 +91,7 @@ export default function AddGuest() {
       const res = await axios.post(BASE_URL + '/guest/create', { ...state });
       if (res.status === 200) {
         isLoading(false);
-        navigate('/guests')
+        navigate('/guests/PENDING')
         dispatch(setMessage({ type: 'success', message: 'Guest registered successfully' }))
         e.target.reset()
       }
