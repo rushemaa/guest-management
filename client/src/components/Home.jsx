@@ -8,16 +8,16 @@ import NoAccountsTwoToneIcon from '@mui/icons-material/NoAccountsTwoTone';
 import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
 import Alert from './feedback/Alert';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
 
   const [data, setData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(()=>{
     axios.get(BASE_URL + '/dashboard/dashStats')
     .then(res => {
-      // console.log(res.data.data.flat().find(d => d.Status === 'PENDING'));
-      // console.log(res.data.data.flat().reduce((a, b) => a + b.Number , 0));
       setData(res.data.data.flat());
     })
     .catch(error => {
@@ -40,7 +40,7 @@ export default function Home() {
         </div>
         <div className='flex flex-wrap mt-10'>
           {/* card */}
-          <div className='flex gap-2 min-w-[20%]'>
+          <div className='flex gap-2 min-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/ALL')}>
             <div className='bg-orange-100 p-3 rounded-2xl'><SelectAllTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-thin subpixel-antialiased'>All Guest</p>
@@ -49,7 +49,7 @@ export default function Home() {
           </div>
 
           {/* card */}
-          <div className='flex gap-2 min-w-[20%]'>
+          <div className='flex gap-2 min-w-[20%] hover:cursor-pointer' >
             <div className='bg-pink-100 text-green p-3 rounded-xl'><HowToRegTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-extralight subpixel-antialiased'>In Guest</p>
@@ -58,7 +58,7 @@ export default function Home() {
           </div>
 
           {/* card */}
-          <div className='flex gap-2 min-w-[20%]'>
+          <div className='flex gap-2 min-w-[20%] hover:cursor-pointer'>
             <div className='bg-green-100 p-3 rounded-xl'><MeetingRoomTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Out Guest</p>
@@ -67,7 +67,7 @@ export default function Home() {
           </div>
 
           {/* card */}
-          <div className='flex gap-2 min-w-[20%]'>
+          <div className='flex gap-2 min-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/PENDING')}>
             <div className='bg-red-100 text-green p-3 rounded-xl'><DirectionsWalkTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Pending</p>
@@ -78,7 +78,7 @@ export default function Home() {
           </div>
 
           {/* card */}
-          <div className='flex gap-2 min-w-[20%]'>
+          <div className='flex gap-2 min-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/CANCELED')}>
             <div className='bg-violet-50 text-green p-3 rounded-xl'><NoAccountsTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Cancelled guest</p>

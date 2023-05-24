@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import LeftNav from './Leftnav';
 import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
@@ -105,7 +105,8 @@ export default function Guests() {
                 <option value="CANCELED">cancelled guest</option>
                 <option value="VISITED">visited guest</option>
                 <option value="ALL">all guest status</option>
-              </select></label>
+              </select>
+            </label>
           </div>
           <div className='flex items-center gap-x-10 gap-y-0 flex-wrap'>
             <div className='flex flex-nowrap gap-2'><label>From:</label> <input type='date' name='from' onChange={handleChange} className='px-2' /></div>
