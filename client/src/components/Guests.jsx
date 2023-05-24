@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import LeftNav from './Leftnav';
 import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
@@ -14,6 +14,7 @@ export default function Guests() {
   const [guests, setGuests] = useState([]);
   const [filterRes, setFilterRes] = useState([])
   const [dateFilter, setDateFilter] = useState({})
+  const [visitStatus, setVisitorStatus] = useState("PENDING");
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -27,7 +28,7 @@ export default function Guests() {
 
 
   const getDataInDateInterval = (data, startDate, endDate) => {
-    console.log(`start date is ${startDate}, end date is ${endDate}`);
+    // console.log(`start date is ${startDate}, end date is ${endDate}`);
     setFilterRes([...data?.filter(item => {
       const itemDate = new Date(item.date);
       return itemDate.getTime() >= startDate.getTime() && itemDate.getTime() <= endDate.getTime();
@@ -35,7 +36,7 @@ export default function Guests() {
   }
 
   const getGuests = async (page) => {
-    axios.get(BASE_URL + `/guest/findAll/visitStatus/ALL/page/${page}`)
+    axios.get(BASE_URL + `/guest/findAll/visitStatus/${visitStatus}/page/${page}`)
       .then(res => {
         setGuests([...res.data.data])
       })
@@ -48,7 +49,7 @@ export default function Guests() {
     if (guests.length) {
       setFilterRes([...guests])
     }
-  }, [guests])
+  }, [guests, visitStatus])
 
   const handleSearch = (value) => {
     value !== '' ?
@@ -57,11 +58,15 @@ export default function Guests() {
       setFilterRes([...guests])
   }
 
+  const handleVisitStatus = (e) => {
+    setVisitorStatus(e.target.value);
+  }
+
 
 
   useEffect(() => {
     getGuests(1)
-  }, [])
+  }, [visitStatus])
 
   const handleGuestDelete = (id) => {
     axios.delete(BASE_URL + `/guest/delete/${id}`).then(
@@ -84,7 +89,13 @@ export default function Guests() {
         <div className='flex justify-between items-center flex-wrap gap-y-5'>
           <div className=''>
             <h1 className='font-semibold text-2xl leading-6'>Guests</h1>
-            <label className='font-thin text-sm text-gray-500 leading-3'>We are hosting {filterRes?.length} guests</label>
+            <label className='font-thin text-sm text-gray-500 leading-3'>We 're/will hosting {filterRes?.length} 
+            <select onChange={handleVisitStatus}>
+              <option value="PENDING">pending guest</option>
+              <option value="CANCELED">cancelled guest</option>
+              <option value="VISITED">visited guest</option>
+              <option value="ALL">all guest status</option>
+            </select></label>
           </div>
           <div className='flex items-center gap-x-10 gap-y-0 flex-wrap'>
             <div className='flex flex-nowrap gap-2'><label>From:</label> <input type='date' name='from' onChange={handleChange} className='px-2' /></div>

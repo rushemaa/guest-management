@@ -141,7 +141,7 @@ const Guest = () => {
         </div>
         {
           details?.Transports?.map((transport, i) =>
-            <div className="list py-5 grid gap-x-10 gap-y-6 grid-cols-3 border-b border-gray-300">
+            <div key={i} className="list py-5 grid gap-x-10 gap-y-6 grid-cols-3 border-b border-gray-300">
               <div className='information flex flex-col'>
                 <label className='text-lg font-normal'>{transport?.transportType}</label>
                 <span className='text-gray-500'>Entrance mode</span>
