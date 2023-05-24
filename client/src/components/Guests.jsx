@@ -101,10 +101,10 @@ export default function Guests() {
             <h1 className='font-semibold text-2xl leading-6'>Guests</h1>
             <label className='font-thin text-sm text-gray-500 leading-3'>We 're/will hosting {filterRes?.length}
               <select onChange={handleVisitStatus}>
-                <option value="PENDING">pending guest</option>
-                <option value="CANCELED">cancelled guest</option>
-                <option value="VISITED">visited guest</option>
-                <option value="ALL">all guest status</option>
+                <option selected={status === "PENDING" ? true : false } value="PENDING">pending guest</option>
+                <option selected={status === "CANCELED" ? true : false } value="CANCELED">cancelled guest</option>
+                <option selected={status === "VISITED" ? true : false } value="VISITED">visited guest</option>
+                <option selected={status === "ALL" ? true : false } value="ALL">all guest status</option>
               </select>
             </label>
           </div>
