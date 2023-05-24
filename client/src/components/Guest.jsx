@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { setMessage } from '../service/reducers/AlertSlice';
 import Alert from './feedback/Alert';
 import EditGuest from '../pages/guest/EditGuest';
+import TransportCU from '../pages/guest/TransportCU';
 
 const handleBackBtn = () => {
   window.location.href = '/guests'
@@ -91,7 +92,7 @@ const Guest = () => {
           </button>
           <h1 className='font-semibold text-2xl'>Guest information</h1>
           <div className='information flex items-center justify-end flex-row gap-x-7 grow text-center'>
-            <CreateTwoToneIcon onClick={() => { handleEdit('guest') }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
+            <CreateTwoToneIcon onClick={() => { handleEdit('guest', details) }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
             <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 text-red-800 hover:text-green-800' onClick={handleGuestDelete} />
           </div>
         </div>
@@ -161,13 +162,14 @@ const Guest = () => {
         {
           details?.Transports?.map((transport, i) =>
             <div key={i} className="list py-5 grid gap-x-10 gap-y-6 grid-cols-3 border-b border-gray-300">
+            <div key={i} className="list py-5 grid gap-x-10 gap-y-6 grid-cols-3 border-b border-gray-300">
               <div className='information flex flex-col'>
                 <label className='text-lg font-normal'>{transport?.transportType}</label>
                 <span className='text-gray-500'>Entrance mode</span>
               </div>
               <div></div>
               <div className='information flex items-center flex-row gap-x-7'>
-                <CreateTwoToneIcon onClick={() => { handleEdit('car') }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
+                <CreateTwoToneIcon onClick={() => { handleEdit('car', transport) }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
                 <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 text-red-800 hover:text-green-800' onClick={() => handleTransportDelete(transport?.id)} />
               </div>
               {
@@ -208,6 +210,7 @@ const Guest = () => {
           )
         }
         <EditGuest toggle={toggleGEdit} isToggled={isGEditToggled} data={current} postOp={getGuest} />
+        <TransportCU toggle={toggleCEdit} isToggled={isCEditToggled} data={current} postOp={getGuest} />
       </div>
     </div>
   )

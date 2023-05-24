@@ -362,7 +362,7 @@ export default function AddGuest() {
                       <div className="input-group min-w-[100%]">
                         <label for="gnames">Guest Entry Mode</label>
                         <select value={state?.entryMode} onChange={(e) => { handleEntryMode(e.target.value) }}>
-                          <option value="">Choose guest entry modee {selfDrive}</option>
+                          <option value="">Choose guest entry mode</option>
                           <option value='1'> on foot </option>
                           <option value='2'> self drive </option>
                           <option value='3'> driver </option>
@@ -434,7 +434,7 @@ export default function AddGuest() {
                                 />
                               </div>
                               <div class={!(selfDrive) ? '' : 'hidden'}>
-                                <label for="gnames">Driver Id numberrrr</label>
+                                <label for="gnames">Driver Id number</label>
                                 <input class="input-group min-w-[100%]"
                                   type="text"
                                   id="id"
