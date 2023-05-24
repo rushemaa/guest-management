@@ -20,18 +20,16 @@ export default function Guests() {
   }
 
   useEffect(() => {
-    getDataInDateInterval(guests, new Date(dateFilter?.from ?? new Date('1970-01-01')), new Date(dateFilter?.to ?? new Date('2023-10-10')))
+    getDataInDateInterval(guests, new Date(dateFilter?.from ?? new Date('1970-01-01')), new Date(dateFilter?.to?dateFilter?.to:new Date()))
   }, [dateFilter])
 
 
   const getDataInDateInterval = (data, startDate, endDate) => {
     console.log(`start date is ${startDate}, end date is ${endDate}`);
-    const result = data?.filter(item => {
+    setFilterRes([...data?.filter(item => {
       const itemDate = new Date(item.date);
-      return itemDate >= startDate && itemDate <= endDate;
-    })
-    console.log([...result])
-    setGuests([...result])
+      return itemDate.getTime() >= startDate.getTime() && itemDate.getTime() <= endDate.getTime();
+    })])
   }
 
   const getGuests = async (page) => {
@@ -72,7 +70,7 @@ export default function Guests() {
         <LeftNav />
       </div>
       <div className="right-side">
-        <Alert/>
+        <Alert />
         <div className='flex justify-between items-center flex-wrap gap-y-5'>
           <div className=''>
             <h1 className='font-semibold text-2xl leading-6'>Guests</h1>
@@ -90,7 +88,7 @@ export default function Guests() {
           <table className='w-full report-table'>
             <tr><th>#</th><th>Guest Names</th><th>Receiver</th><th>From</th><th>Date/Time</th><th>Actions</th></tr>
             {filterRes?.map((guest, index) => (
-              <tr>
+              <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{guest.guestFullName}</td>
                 <td>{guest.receiverFullName}</td>
