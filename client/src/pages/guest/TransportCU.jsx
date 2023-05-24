@@ -35,7 +35,9 @@ const TransportCU = ({ toggle, isToggled, data, id, postOp }) => {
         if (res.status === 200) {
           isLoading(false);
           isToggled(false)
-          postOp()
+          setTimeout(()=>{
+            postOp()
+          }, 50)
           dispatch(setMessage({ type: 'success', message: 'Transport registered successfully' }))
           e.target.reset()
         }
@@ -45,11 +47,13 @@ const TransportCU = ({ toggle, isToggled, data, id, postOp }) => {
       }
     } else {
       try {
-        const res = await axios.put(`${BASE_URL}/transport/update`, { ...state })
+        const res = await axios.put(`${BASE_URL}/guest/updateTransport`, { ...state })
         if (res.data.status == 'ok') {
           isLoading(false);
           isToggled(false)
-          postOp()
+          setTimeout(()=>{
+            postOp()
+          }, 50)
           dispatch(setMessage({ type: 'success', message: "Transport Updated successfully" }))
         }
       } catch (error) {

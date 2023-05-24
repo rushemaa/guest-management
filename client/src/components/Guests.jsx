@@ -7,6 +7,7 @@ import PreviewTwoToneIcon from '@mui/icons-material/PreviewTwoTone';
 import { useDispatch } from 'react-redux';
 import { setMessage } from '../service/reducers/AlertSlice';
 import Alert from './feedback/Alert';
+import { useParams } from 'react-router-dom';
 
 
 export default function Guests() {
@@ -14,8 +15,13 @@ export default function Guests() {
   const [guests, setGuests] = useState([]);
   const [filterRes, setFilterRes] = useState([]);
   const [dateFilter, setDateFilter] = useState({});
-  const [visitStatus, setVisitorStatus] = useState("PENDING");
+  const [visitStatus, setVisitorStatus] = useState("");
   const dispatch = useDispatch();
+  const { status } = useParams()
+
+  useEffect(() => {
+    setVisitorStatus(status)
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -45,7 +51,7 @@ export default function Guests() {
   }
 
   const getGuests = async (page) => {
-    axios.get(BASE_URL + `/guest/findAll/visitStatus/${visitStatus}/page/${page}`)
+    axios.get(BASE_URL + `/guest/findAll/visitStatus/${visitStatus ? visitStatus : status}/page/${page}`)
       .then(res => {
         setGuests([...res.data.data])
         setFilterRes([...res.data.data])
@@ -120,7 +126,7 @@ export default function Guests() {
                 <td>{guest.comeFrom}</td>
                 <td>{guest.date} {guest.time}</td>
                 <td className='flex gap-x-5 justify-center'>
-                  <PreviewTwoToneIcon className='cursor-pointer hover:scale-110' onClick={() => location.href = `guest/${guest.randomReference}`} />
+                  <PreviewTwoToneIcon className='cursor-pointer hover:scale-110' onClick={() => location.href = `/guest/${guest.randomReference}`} />
                   <DeleteTwoToneIcon className='cursor-pointer text-red-800 hover:scale-110' onClick={() => handleGuestDelete(guest.randomReference)} />
                 </td></tr>
             ))}

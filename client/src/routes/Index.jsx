@@ -25,7 +25,7 @@ const AppRoutes = () => {
                 />
                 <Route
                     exact
-                    path='/guests'
+                    path='/guests/:status'
                     element={<Guests />}
                 />
                 <Route

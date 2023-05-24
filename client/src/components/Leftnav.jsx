@@ -22,7 +22,7 @@ export default function LeftNav() {
   const navLinks = [
     { url: '/home', ref: 'dashboard', icon: <DashboardIcon className="icons" />, privacy: 'private' },
     { url: '/add-guest', ref: 'Add guest', icon: <GroupAddIcon className="icons" />, privacy: 'private' },
-    { url: '/guests', ref: 'View guests', icon: <FormatListBulletedIcon className="icons" />, privacy: 'public' },
+    { url: '/guests/PENDING', ref: 'View guests', icon: <FormatListBulletedIcon className="icons" />, privacy: 'public' },
     { url: '/admin', ref: 'Admin', icon: <SettingsApplicationsIcon className="icons" />, privacy: 'private' },
   ]
 
