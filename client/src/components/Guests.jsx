@@ -5,6 +5,7 @@ import { BASE_URL } from '../utils/constants';
 import RemoveRedEyeTwoToneIcon from '@mui/icons-material/RemoveRedEyeTwoTone';
 // import AddCircleIcon from '@mui/icons-material/AddCircle';
 import PreviewTwoToneIcon from '@mui/icons-material/PreviewTwoTone';
+import Alert from './feedback/Alert';
 
 
 export default function Guests() {
@@ -82,29 +83,12 @@ export default function Guests() {
             <div className='flex flex-nowrap gap-2'><label>To:</label> <input type='date' name='to' onChange={handleChange} className='px-2' /></div>
           </div>
           <div>
-            <input type='search' placeholder='search for guest' className='p-2 bg-gray-100 rounded-md' style={{width: '300px', boxShadow: '0 0 2px black'}} />
-
             <input type='search' onChange={(e) => { handleSearch(e.target.value) }} placeholder='search for guest' className='p-2 bg-gray-100 rounded-md' style={{ width: '300px', boxShadow: '0 0 2px black' }} />
           </div>
         </div>
         <div className="list py-10">
           <table className='w-full report-table'>
             <tr><th>#</th><th>Guest Names</th><th>Receiver</th><th>From</th><th>Date/Time</th><th>Actions</th></tr>
-            { guests?.map((guest, index) => (
-            <tr>
-              <td>{index + 1}</td>
-              <td>{guest.guestFullName}</td>
-              <td>{guest.receiverFullName}</td>
-              <td>{guest.comeFrom}</td>
-              <td>{guest.date} {guest.time}</td>
-              <td>
-                <RemoveRedEyeTwoToneIcon onClick={() => location.href=`guest/${guest.randomReference}`} />
-              </td></tr>
-            ))}
-
-            <tr><td colSpan={6} className='text-right'>Total: {guests
-            ?.length}</td></tr>
-
             {filterRes?.map((guest, index) => (
               <tr>
                 <td>{index + 1}</td>
