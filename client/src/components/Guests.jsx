@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import LeftNav from './Leftnav';
 import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
-import RemoveRedEyeTwoToneIcon from '@mui/icons-material/RemoveRedEyeTwoTone';
-// import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import PreviewTwoToneIcon from '@mui/icons-material/PreviewTwoTone';
+import { useDispatch } from 'react-redux';
+import { setMessage } from '../service/reducers/AlertSlice';
 import Alert from './feedback/Alert';
 
 
@@ -13,6 +14,7 @@ export default function Guests() {
   const [guests, setGuests] = useState([]);
   const [filterRes, setFilterRes] = useState([])
   const [dateFilter, setDateFilter] = useState({})
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -61,7 +63,15 @@ export default function Guests() {
     getGuests(1)
   }, [])
 
-
+  const handleGuestDelete = (id) => {
+    axios.delete(BASE_URL + `/guest/delete/${id}`).then(
+      res => {
+        dispatch(setMessage({ type: 'success', message: res.data.message }));
+      }
+    ).catch(error => {
+      dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+    });
+  }
 
 
   return (
@@ -94,8 +104,9 @@ export default function Guests() {
                 <td>{guest.receiverFullName}</td>
                 <td>{guest.comeFrom}</td>
                 <td>{guest.date} {guest.time}</td>
-                <td>
-                  <PreviewTwoToneIcon onClick={() => location.href = `guest/${guest.randomReference}`} />
+                <td className='flex gap-x-5 justify-center'>
+                  <PreviewTwoToneIcon className='cursor-pointer hover:scale-110' onClick={() => location.href = `guest/${guest.randomReference}`} />
+                  <DeleteTwoToneIcon className='cursor-pointer text-red-800 hover:scale-110' onClick={()=>handleGuestDelete(guest.randomReference)} />
                 </td></tr>
             ))}
 

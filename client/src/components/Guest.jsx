@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import LeftNav from './Leftnav';
 import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
 import CreateTwoToneIcon from '@mui/icons-material/CreateTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-
+import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
+import { useDispatch } from 'react-redux';
+import { setMessage } from '../service/reducers/AlertSlice';
+import Alert from './feedback/Alert';
 import EditGuest from '../pages/guest/EditGuest';
 
 const handleBackBtn = () => {
@@ -19,16 +22,39 @@ const Guest = () => {
   const [current, setCurrent] = useState({})
   const [toggleGEdit, isGEditToggled] = useState(false)
   const [toggleCEdit, isCEditToggled] = useState(false)
-
-
   const { id } = useParams()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+
   useEffect(() => {
     getGuest()
-  }, [])
+  }, [details])
 
   const getGuest = () => {
     axios.get(BASE_URL + `/guest/getGuest/${id}`).then(
       res => setDetails(res.data.data)
+    ).catch(error => {
+      dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+    });
+  }
+
+  const handleGuestDelete = () => {
+    axios.delete(BASE_URL + `/guest/delete/${id}`).then(
+      res => {
+        dispatch(setMessage({ type: 'success', message: res.data.message }));
+        setTimeout(() => navigate("/guests"), 1000);
+      }
+    ).catch(error => {
+      dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+    });
+  }
+
+  const handleTransportDelete = (id) => {
+    axios.delete(BASE_URL + `/guest/deleteTransport/${id}`).then(
+      res => {
+        dispatch(setMessage({ type: 'success', message: res.data.message }));
+      }
     ).catch(error => {
       dispatch(setMessage({ type: 'error', message: error.response.data.message }))
     });
@@ -39,15 +65,13 @@ const Guest = () => {
     type === 'guest' ? isGEditToggled(true) : isCEditToggled(true)
   }
 
-  console.log(details)
-
-
   return (
     <div className="App">
       <div className="left-side">
         <LeftNav />
       </div>
       <div className="right-side px-5">
+        <Alert/>
         <div className='flex gap-x-5 pt-20 flex-wrap items-center'>
           <button className='flex justify-center align-center rounded-full' onClick={handleBackBtn}>
             <ArrowBackRoundedIcon />
@@ -55,7 +79,7 @@ const Guest = () => {
           <h1 className='font-semibold text-2xl'>Guest information</h1>
           <div className='information flex items-center justify-end flex-row gap-x-7 grow text-center'>
             <CreateTwoToneIcon onClick={() => { handleEdit('guest') }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
-            <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 hover:text-green-800' />
+            <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 text-red-800 hover:text-green-800' onClick={handleGuestDelete} />
           </div>
         </div>
         <div className="list py-10 grid gap-10 grid-cols-3">
@@ -111,8 +135,9 @@ const Guest = () => {
         </div>
 
         {/* Entrance details */}
-        <div className='flex gap-x-5 pt-2 items-center'>
+        <div className='flex gap-x-5 pt-2 items-center justify-between'>
           <h2 className='font-semibold text-xl'><u>Entrance information</u></h2>
+          <button><AddCircleTwoToneIcon /> &nbsp; Add Car</button>
         </div>
         {
           details?.Transports?.map((transport, i) =>
@@ -124,7 +149,7 @@ const Guest = () => {
               <div></div>
               <div className='information flex items-center flex-row gap-x-7'>
                 <CreateTwoToneIcon onClick={() => { handleEdit('car') }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
-                <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 hover:text-green-800' />
+                <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 text-red-800 hover:text-green-800' onClick={() => handleTransportDelete(transport?.id)} />
               </div>
               {
                 (transport?.plateNumber || transport?.vehicleModel || transport?.vehicleColour) &&
