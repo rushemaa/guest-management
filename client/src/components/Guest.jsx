@@ -88,7 +88,7 @@ const Guest = () => {
       <div className="right-side px-5">
         <Alert />
         <div className='flex gap-x-5 pt-20 flex-wrap items-center'>
-          <button className='flex justify-center align-center rounded-full' onClick={handleBackBtn}>
+          <button className='flex justify-center align-center rounded-full hover:bg-main-color-onhover transition-all duration-300' onClick={handleBackBtn}>
             <ArrowBackRoundedIcon />
           </button>
           <h1 className='font-semibold text-2xl'>Guest information</h1>
@@ -158,7 +158,7 @@ const Guest = () => {
         {/* Entrance details */}
         <div className='flex gap-x-5 pt-2 items-center justify-between'>
           <h2 className='font-semibold text-xl'><u>Entrance information</u></h2>
-          {(userType !== 'GATE') && <button onClick={() => { isCEditToggled(true) }}><AddCircleTwoToneIcon /> &nbsp; Add Car</button>}
+          {(userType !== 'GATE') && <button className='hover:bg-main-color-onhover transition-all duration-300' onClick={() => { isCEditToggled(true) }}><AddCircleTwoToneIcon /> &nbsp; Add Car</button>}
         </div>
         {
           details?.Transports?.map((transport, i) =>

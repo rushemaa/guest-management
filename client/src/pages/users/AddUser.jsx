@@ -1,23 +1,22 @@
-import React, { useEffect, useState } from 'react'
-import Wrapper from '../../layout/Wrapper'
-import SubmitButton from '../../components/buttons/SubmitButton'
-import axios from 'axios'
-import { BASE_URL } from '../../utils/constants'
-import { useDispatch } from 'react-redux'
-import { setMessage } from '../../service/reducers/AlertSlice'
+import React, { useEffect, useState } from "react";
+import Wrapper from "../../layout/Wrapper";
+import SubmitButton from "../../components/buttons/SubmitButton";
+import axios from "axios";
+import { BASE_URL } from "../../utils/constants";
+import { useDispatch } from "react-redux";
+import { setMessage } from "../../service/reducers/AlertSlice";
 
 const AddUser = ({ toggle, isToggled, data, postOp }) => {
-
-  const [state, setState] = useState()
-  const [loading, isLoading] = useState(false)
-  const [gates, setGates] = useState([])
-  const dispatch = useDispatch()
+  const [state, setState] = useState();
+  const [loading, isLoading] = useState(false);
+  const [gates, setGates] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (data?.id) {
-      setState({ ...data })
+      setState({ ...data });
     }
-  }, [data])
+  }, [data]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,195 +24,330 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
   };
 
   const getGates = () => {
-    axios.get(BASE_URL + `/gate/findAll`)
-      .then(res => {
-        setGates([...res.data.data])
+    axios
+      .get(BASE_URL + `/gate/findAll`)
+      .then((res) => {
+        setGates([...res.data.data]);
       })
-      .catch(error => {
-        dispatch(setMessage({ type: 'error', message: error.response.data.message }))
-      })
-  }
+      .catch((error) => {
+        dispatch(
+          setMessage({ type: "error", message: error.response.data.message })
+        );
+      });
+  };
 
   useEffect(() => {
     getGates();
-  }, [])
+  }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    isLoading(true)
+    e.preventDefault();
+    isLoading(true);
     if (!state?.id) {
       try {
-        const res = await axios.post(BASE_URL + '/account/create', { ...state });
+        const res = await axios.post(BASE_URL + "/account/create", {
+          ...state,
+        });
         if (res.status === 200) {
           isLoading(false);
-          isToggled(false)
-          postOp()
-          dispatch(setMessage({ type: 'success', message: 'User registered successfully' }))
-          e.target.reset()
+          isToggled(false);
+          postOp();
+          dispatch(
+            setMessage({
+              type: "success",
+              message: "User registered successfully",
+            })
+          );
+          e.target.reset();
         }
       } catch (error) {
         isLoading(false);
-        dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+        dispatch(
+          setMessage({ type: "error", message: error.response.data.message })
+        );
       }
     } else {
       try {
-        const res = await axios.put(`${BASE_URL}/account/update`, { ...state })
-        if (res.data.status == 'ok') {
+        const res = await axios.put(`${BASE_URL}/account/update`, { ...state });
+        if (res.data.status == "ok") {
           isLoading(false);
-          isToggled(false)
-          postOp()
-          dispatch(setMessage({ type: 'success', message: "User Updated successfully" }))
+          isToggled(false);
+          postOp();
+          dispatch(
+            setMessage({
+              type: "success",
+              message: "User Updated successfully",
+            })
+          );
         }
       } catch (error) {
         isLoading(false);
-        dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+        dispatch(
+          setMessage({ type: "error", message: error.response.data.message })
+        );
       }
     }
-  }
+  };
 
   return (
-    <Wrapper title={state?.id ? "Update User info" : "Add User"} toggle={toggle} isToggled={isToggled} >
-      <form className='py-3' onSubmit={(e) => handleSubmit(e)}>
-        <div className='flex justify-around'>
+    <Wrapper
+      title={state?.id ? "Update User info" : "Add User"}
+      toggle={toggle}
+      isToggled={isToggled}
+    >
+      <form className="py-3" onSubmit={(e) => handleSubmit(e)}>
+        <div className="flex justify-around mt-5">
           <div className="relative z-0 w-2/5 mb-2 group">
-            <input type="text" name="fullName"
+            <input
+              type="text"
+              name="fullName"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" " required=""
+              placeholder=" "
+              required=""
               value={state?.fullName}
-              onChange={(e) => { handleChange(e) }} autoComplete="off" />
-            <label htmlFor="lastname"
-              className="absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              autoComplete="off"
+            />
+            <label
+              htmlFor="lastname"
+              className="absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
               Full names *
             </label>
           </div>
           <div className="relative z-0 w-2/5 mb-2 group">
             <select
-              name='institution'
+              name="institution"
               value={state?.institution}
-              onChange={(e) => { handleChange(e) }}
-              className='block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer'
-              placeholder=' '
-              required=''
-              autoComplete='off'>
-              <option className='text-xs' value=''>
-                Institution *
-              </option>
-              {['DI', 'NISS'].map((item, key) => (
-                <option key={key} className='text-xs' value={item}>
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              className="block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              required=""
+              autoComplete="off"
+            >
+              {!state?.id ? (
+                  <option className="text-xs" value="">
+                    Select Institution *
+                  </option>
+                ) : (
+                  ""
+                )}
+              {["DI", "NISS"].map((item, key) => (
+                <option key={key} className="text-xs" value={item}>
                   {item}
                 </option>
               ))}
             </select>
+            {state?.id ? (
+              <label
+                htmlFor="lastname"
+                className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+              >
+                Select Institution *
+              </label>
+            ) : (
+              ""
+            )}
           </div>
         </div>
-        <div className='flex justify-around'>
+        <div className="flex justify-around mt-5">
           <div className="relative z-0 w-2/5 mb-2 group">
-            <input type="text" name="username"
+            <input
+              type="text"
+              name="username"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none   focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" " required=""
+              placeholder=" "
+              required=""
               value={state?.username}
-              onChange={(e) => { handleChange(e) }} autoComplete="off" />
-            <label htmlFor="lastname"
-              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              autoComplete="off"
+            />
+            <label
+              htmlFor="lastname"
+              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
               Username *
             </label>
           </div>
           <div className="relative z-0 w-2/5 mb-2 group">
             <select
-              name='role'
+              name="role"
               value={state?.role}
-              onChange={(e) => { handleChange(e) }}
-              className='block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer'
-              placeholder=' '
-              required=''
-              autoComplete='off'>
-              <option className='text-xs' value=''>
-                Role{state?.role} *
-              </option>
-              {['HOST', 'ADMIN', 'SECURITY OFFICER', 'GATE'].map((item, key) => (
-                <option key={key} className='text-xs' value={item}>
-                  {item}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              className="block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              required=""
+              autoComplete="off"
+            >
+              {!state?.id ? (
+                <option className="text-xs" value="">
+                  Select Role *
                 </option>
-              ))}
+              ) : (
+                ""
+              )}
+              {["HOST", "ADMIN", "SECURITY OFFICER", "GATE"].map(
+                (item, key) => (
+                  <option key={key} className="text-xs" value={item}>
+                    {item}
+                  </option>
+                )
+              )}
             </select>
+            {state?.id ? (
+              <label
+                htmlFor="lastname"
+                className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+              >
+                Select Role *
+              </label>
+            ) : (
+              ""
+            )}
           </div>
         </div>
-        <div className={`flex justify-status ml-5 ${state?.id ? '' : 'hidden'}`}>
+        <div
+          className={`flex justify-status mt-3 ml-5 ${state?.id ? "" : "hidden"}`}
+        >
           <div className="relative z-0 w-2/5 mb-2 group">
             <select
-              name='status'
+              name="status"
               value={state?.status}
-              onChange={(e) => { handleChange(e) }}
-              className='block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer'
-              placeholder=' '
-              required=''
-              autoComplete='off'>
-              <option className='text-xs' value=''>
-                Select status *
-              </option>
-              {['ACTIVE', 'PENDING', 'DEACTIVATED'].map((item, key) => (
-                <option key={key} className='text-xs' value={item}>
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              className="block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              required=""
+              autoComplete="off"
+            >
+              {!state?.id ? (
+                <option className="text-xs" value="">
+                  Select Status *
+                </option>
+              ) : (
+                ""
+              )}
+              {["ACTIVE", "PENDING", "DEACTIVATED"].map((item, key) => (
+                <option key={key} className="text-xs" value={item}>
                   {item}
                 </option>
               ))}
             </select>
+            {state?.id ? (
+              <label
+                htmlFor="lastname"
+                className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+              >
+                Select Status *
+              </label>
+            ) : (
+              ""
+            )}
           </div>
         </div>
-        {
-          state?.role === 'GATE' ? (
-            <div className='flex justify-start ml-5'>
-              <div className="relative z-0 w-2/5 mb-2 group">
-                <select
-                  name='GateId'
-                  value={state?.gateId}
-                  onChange={(e) => { handleChange(e) }}
-                  className='block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer'
-                  placeholder=' '
-                  required=''
-                  autoComplete='off'>
-                  <option className='text-xs' value=''>
-                    Gate *
+        {state?.role === "GATE" ? (
+          <div className="flex justify-start ml-5">
+            <div className="relative z-0 w-2/5 mb-2 group">
+              <select
+                name="GateId"
+                value={state?.gateId}
+                onChange={(e) => {
+                  handleChange(e);
+                }}
+                className="block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder=" "
+                required=""
+                autoComplete="off"
+              >
+                {!state?.id ? (
+                  <option className="text-xs" value="">
+                    Select Gate *
                   </option>
-                  {gates?.map((item, key) => (
-                    <option key={key} className='text-xs' value={item.id}>
-                      {item.gate}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                ) : (
+                  ""
+                )}
+                {gates?.map((item, key) => (
+                  <option key={key} className="text-xs" value={item.id}>
+                    {item.gate}
+                  </option>
+                ))}
+              </select>
+              {state?.id ? (
+                <label
+                  htmlFor="lastname"
+                  className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  Select Gate *
+                </label>
+              ) : (
+                ""
+              )}
             </div>
-          ) : ''
-        }
-        <div className={`flex justify-around ${state?.id ? 'hidden' : ''}`}>
+          </div>
+        ) : (
+          ""
+        )}
+        <div className={`flex justify-around ${state?.id ? "hidden" : ""}`}>
           <div className="relative z-0 w-2/5 mb-2 group">
-            <input type="password" name="password"
+            <input
+              type="password"
+              name="password"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none   focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" " required=""
+              placeholder=" "
+              required=""
               value={state?.password}
-              onChange={(e) => { handleChange(e) }} autoComplete="off" />
-            <label htmlFor="password"
-              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              autoComplete="off"
+            />
+            <label
+              htmlFor="password"
+              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
               Password *
             </label>
           </div>
           <div className="relative z-0 w-2/5 mb-2 group">
-            <input type="password" name="confirmPassword"
+            <input
+              type="password"
+              name="confirmPassword"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none   focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" " required=""
+              placeholder=" "
+              required=""
               value={state?.confirmPassword}
-              onChange={(e) => { handleChange(e) }} autoComplete="off" />
-            <label htmlFor="password"
-              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              autoComplete="off"
+            />
+            <label
+              htmlFor="password"
+              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
               Confirm Password *
             </label>
           </div>
         </div>
-        <div className='flex justify-center mt-10'>
-          <SubmitButton value={"Save"} onsubmit={"Saving..."} status={loading} />
+        <div className="flex justify-center mt-10">
+          <SubmitButton
+            value={"Save"}
+            onsubmit={"Saving..."}
+            status={loading}
+          />
         </div>
       </form>
     </Wrapper>
-  )
-}
+  );
+};
 
-export default AddUser
+export default AddUser;

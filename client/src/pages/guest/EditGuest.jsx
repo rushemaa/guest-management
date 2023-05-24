@@ -104,7 +104,7 @@ const EditGuest = ({ toggle, isToggled, data, postOp }) => {
             </label>
           </div>
         </div>
-        <div className='flex justify-around'>
+        <div className='flex justify-around mt-3'>
           <div className="relative z-0 w-2/5 mb-2 group">
             <input type="text" name="guestPhone"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none   focus:outline-none focus:ring-0 focus:border-blue-600 peer"
@@ -253,29 +253,6 @@ const EditGuest = ({ toggle, isToggled, data, postOp }) => {
         <div className='flex justify-around mt-3'>
           <div className="relative z-0 w-2/5 mb-2 group">
             <select
-              name='visitStatus'
-              value={state?.visitStatus}
-              onChange={(e) => { handleChange(e) }}
-              className='block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer'
-              placeholder=' '
-              required=''
-              autoComplete='off'>
-              <option value="">Select Visit status</option>
-              {['CANCELLED', 'POSTPONED', 'PENDING', 'VISITED']?.map((item, key) => (
-                <option key={key} className='text-xs' value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-            <label htmlFor="receiverPhoneNumber"
-              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-              Visit status
-            </label>
-          </div>
-        </div>
-        <div className='flex justify-around mt-3'>
-          <div className="relative z-0 w-2/5 mb-2 group">
-            <select
               name='gate'
               value={state?.Gate?.id}
               onChange={(e) => { handleChange(e) }}
@@ -324,11 +301,32 @@ const EditGuest = ({ toggle, isToggled, data, postOp }) => {
             </label>
           </div>
         </div>
-        <div className='flex justify-start ml-5'>
+        <div className='flex justify-around mt-3'>
           <div className="relative z-0 w-2/5 mb-2 group">
-            <label for="status text-xs">Comments</label>
-            <textarea rows={5} cols={50} name='comment' value={state?.comment} onChange={(e) => { handleChange(e) }} placeholder='Any comment ...' className='border border-gray-200 rounded p-3'></textarea>
+            <select
+              name='visitStatus'
+              value={state?.visitStatus}
+              onChange={(e) => { handleChange(e) }}
+              className='block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer'
+              placeholder=' '
+              required=''
+              autoComplete='off'>
+              <option value="">Select Visit status</option>
+              {['CANCELLED', 'POSTPONED', 'PENDING', 'VISITED']?.map((item, key) => (
+                <option key={key} className='text-xs' value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <label htmlFor="receiverPhoneNumber"
+              className=" absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              Visit status
+            </label>
           </div>
+        </div>
+        <div className="input-group min-w-[100%] px-5">
+          <label for="status">Comments</label>
+          <textarea rows={3} name='comment' value={state?.comment} onChange={(e) => { handleChange(e) }} placeholder='Any comment ...' className='border border-gray-200 rounded p-3'></textarea>
         </div>
         <div className='flex justify-center mt-5'>
           <SubmitButton value={"Save"} onsubmit={"Saving..."} status={loading} />

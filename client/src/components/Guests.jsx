@@ -118,7 +118,7 @@ export default function Guests() {
         </div>
         <div className="list py-10">
           <table className='w-full report-table'>
-            <tr><th>#</th><th>Guest Names</th><th>Receiver</th><th>From</th><th>Date/Time</th><th>Actions</th></tr>
+            <tr><th>#</th><th>Guest Names</th><th>Receiver</th><th>From</th><th>Date/Time</th><th className='flex justify-center'>Actions</th></tr>
             {filterRes?.map((guest, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>

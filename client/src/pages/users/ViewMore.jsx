@@ -23,13 +23,13 @@ const ViewMore = ({ view, setView, user }) => {
     };
 
     useEffect(() => {
-        console.log('in view more');
-        console.log(user)
+        // console.log('in view more');
+        // console.log(user)
     }, [user])
     return (
         <Wrapper title={'User information'} toggle={view} isToggled={setView}>
             <div className='pl-5'>
-                <div className='grid grid-cols-3'>
+                <div className='grid grid-cols-3 gap-4 py-4'>
                     <div className='px-3' >
                         <h3 className='text-xs font-bold my-2'>Full Names</h3>
                         <h3 className='text-sm my-2'>{user?.fullName}</h3>

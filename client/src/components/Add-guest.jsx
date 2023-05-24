@@ -143,6 +143,7 @@ export default function AddGuest() {
         <LeftNav />
       </div>
       <CheckAccess>
+      <Alert/>
         <div className="right-side">
           <h1 className='font-semibold text-2xl w-full text-center' id='top'>Guest Registration</h1>
 

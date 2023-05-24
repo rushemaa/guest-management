@@ -6,6 +6,9 @@ import { AiFillEye, AiFillSetting } from "react-icons/ai";
 import { IconContext } from "react-icons";
 import { BiChevronDown } from "react-icons/bi";
 import { useDispatch } from "react-redux";
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import PreviewTwoToneIcon from '@mui/icons-material/PreviewTwoTone';
+import CreateTwoToneIcon from '@mui/icons-material/CreateTwoTone';
 
 const ActionWrapper = ({
     eye = false,
@@ -25,11 +28,9 @@ const ActionWrapper = ({
                         onClick={() => {
                             onView();
                         }}
-                        className="text-black p-1 w-6 rounded-md bg-white cursor-pointer hover:bg-white hover:text-yellow-700 transition delay-150 duration-300"
+                        className=""
                     >
-                        <IconContext.Provider value={{ size: "1.2em", color: "darkBlue" }}>
-                            <AiFillEye />
-                        </IconContext.Provider>
+                        <PreviewTwoToneIcon className='cursor-pointer hover:scale-110'/>
                     </div>
                 )}
                 {edit && (
@@ -37,11 +38,8 @@ const ActionWrapper = ({
                         onClick={() => {
                             onEdit();
                         }}
-                        className="text-yellow-500 p-1 w-6 rounded-md bg-white cursor-pointer hover:bg-white hover:text-yellow-700 transition delay-150 duration-300 ActionBtn"
                     >
-                        <IconContext.Provider value={{ size: "1.2em", color: "brown" }}>
-                            <FiEdit />
-                        </IconContext.Provider>
+                        <CreateTwoToneIcon className='cursor-pointer hover:scale-110' />
                     </div>
                 )}
                 {
@@ -53,11 +51,9 @@ const ActionWrapper = ({
                                     onDelete();
                                 }
                             }}
-                            className="text-red-500 p-1 w-6 rounded-md bg-white cursor-pointer hover:bg-white hover:text-red-700 transition delay-150 duration-300 ActionBtn"
+                            className=""
                         >
-                            <IconContext.Provider value={{ size: "1em" }}>
-                                <RiDeleteBin6Line />
-                            </IconContext.Provider>
+                            <DeleteTwoToneIcon className='cursor-pointer text-red-800 hover:scale-110'/>
 
                             <div className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700">
                                 Delete
