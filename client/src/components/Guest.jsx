@@ -23,6 +23,7 @@ const Guest = () => {
   const { id } = useParams()
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userType = JSON.parse(sessionStorage.getItem(import.meta.env.VITE_APP_AUTH))?.user?.role;
   
   const handleBackBtn = () => {
     navigate('/guests');
@@ -30,6 +31,7 @@ const Guest = () => {
 
   useEffect(() => {
     getGuest()
+    // console.log('Guest')
   }, [details])
 
   const getGuest = () => {
@@ -91,10 +93,10 @@ const Guest = () => {
             <ArrowBackRoundedIcon />
           </button>
           <h1 className='font-semibold text-2xl'>Guest information</h1>
-          <div className='information flex items-center justify-end flex-row gap-x-7 grow text-center'>
+          {(userType !== 'GATE') && <div className='information flex items-center justify-end flex-row gap-x-7 grow text-center'>
             <CreateTwoToneIcon onClick={() => { handleEdit('guest', details) }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
             <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 text-red-800 hover:text-green-800' onClick={handleGuestDelete} />
-          </div>
+          </div>}
         </div>
         <div className="list py-10 grid gap-10 grid-cols-3">
           <div className='information flex flex-col'>
@@ -157,7 +159,7 @@ const Guest = () => {
         {/* Entrance details */}
         <div className='flex gap-x-5 pt-2 items-center justify-between'>
           <h2 className='font-semibold text-xl'><u>Entrance information</u></h2>
-          <button><AddCircleTwoToneIcon /> &nbsp; Add Car</button>
+          {(userType !== 'GATE') && <button><AddCircleTwoToneIcon /> &nbsp; Add Car</button>}
         </div>
         {
           details?.Transports?.map((transport, i) =>
@@ -167,10 +169,13 @@ const Guest = () => {
                 <span className='text-gray-500'>Entrance mode</span>
               </div>
               <div></div>
-              <div className='information flex items-center flex-row gap-x-7'>
-                <CreateTwoToneIcon onClick={() => { handleEdit('car', transport) }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
-                <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 text-red-800 hover:text-green-800' onClick={() => handleTransportDelete(transport?.id)} />
-              </div>
+                <div className='information flex items-center flex-row gap-x-7'>
+                  {
+                    (userType !== 'GATE') && <><CreateTwoToneIcon onClick={() => { handleEdit('car', transport) }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
+                    <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 text-red-800 hover:text-green-800' onClick={() => handleTransportDelete(transport?.id)} />
+                    </>
+                  }
+                </div>
               {
                 (transport?.plateNumber || transport?.vehicleModel || transport?.vehicleColour) &&
                 <>
@@ -184,7 +189,7 @@ const Guest = () => {
                   </div>
                   <div className='information flex flex-col'>
                     <label className='text-lg font-normal'>Car color</label>
-                    <span className='pl-1 text-gray-500 flex items-center'><div className={"w-[15px] h-[10px] rounded-full bg-" + transport?.vehicleColour.toLowerCase() + "-500"}></div> &nbsp; {transport?.vehicleColour}</span>
+                    <span className='pl-1 text-gray-500 flex items-center'><div className={"w-[15px] h-[10px] rounded-full bg-" + transport?.vehicleColour?.toLowerCase() + "-500"}></div> &nbsp; {transport?.vehicleColour}</span>
                   </div>
                 </>
               }

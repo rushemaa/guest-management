@@ -12,8 +12,8 @@ import Alert from './feedback/Alert';
 export default function Guests() {
 
   const [guests, setGuests] = useState([]);
-  const [filterRes, setFilterRes] = useState([])
-  const [dateFilter, setDateFilter] = useState({})
+  const [filterRes, setFilterRes] = useState([]);
+  const [dateFilter, setDateFilter] = useState({});
   const [visitStatus, setVisitorStatus] = useState("PENDING");
   const dispatch = useDispatch();
 
@@ -49,6 +49,7 @@ export default function Guests() {
     if (guests.length) {
       setFilterRes([...guests])
     }
+    // console.log("userType");
   }, [guests, visitStatus])
 
   const handleSearch = (value) => {
