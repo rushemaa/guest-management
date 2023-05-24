@@ -13,12 +13,9 @@ import Alert from './feedback/Alert';
 import EditGuest from '../pages/guest/EditGuest';
 import TransportCU from '../pages/guest/TransportCU';
 
-const handleBackBtn = () => {
-  window.location.href = '/guests'
-}
 
 const Guest = () => {
-
+  
   const [details, setDetails] = useState();
   const [current, setCurrent] = useState({})
   const [toggleGEdit, isGEditToggled] = useState(false)
@@ -26,7 +23,10 @@ const Guest = () => {
   const { id } = useParams()
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  
+  const handleBackBtn = () => {
+    navigate('/guests');
+  }
 
   useEffect(() => {
     getGuest()
