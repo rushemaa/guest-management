@@ -66,7 +66,7 @@ export default function Guests() {
 
   useEffect(() => {
     getGuests(1)
-  }, [visitStatus])
+  }, [guests, visitStatus])
 
   const handleGuestDelete = (id) => {
     axios.delete(BASE_URL + `/guest/delete/${id}`).then(
