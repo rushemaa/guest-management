@@ -60,6 +60,19 @@ const Guest = () => {
     });
   }
 
+  const handleVisitStatusChange = (e) => {
+    const data = {
+      randomReference: id,
+      visitStatus: e.target.value
+    }
+    axios.put(BASE_URL + '/guest/updateVisitStatus', data).then(res => {
+      if (res.status === 200) 
+        dispatch(setMessage({ type: 'success', message: res.data.message }));
+    }).catch(error => {
+      dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+    });
+  }
+
   const handleEdit = (type) => {
     setCurrent({ ...details })
     type === 'guest' ? isGEditToggled(true) : isCEditToggled(true)
@@ -130,7 +143,13 @@ const Guest = () => {
           </div>
           <div className='information flex flex-col'>
             <label className='text-lg font-normal'>Status</label>
-            <span className='pl-1 text-gray-500'>{details?.visitStatus}</span>
+            {/* <span className='pl-1 text-gray-500'>{details?.visitStatus}</span> */}
+            <span className='text-gray-500'>
+              <select onChange={handleVisitStatusChange}>
+                <option value="PENDING" selected={details?.visitStatus === "PENDING" ? "true" : "false"}>Pending</option>
+                <option value="VISITED"  selected={details?.visitStatus === "VISITED" ? "true" : "false"}>Visited</option>
+              </select>
+            </span>
           </div>
         </div>
 
