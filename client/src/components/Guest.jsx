@@ -75,8 +75,6 @@ const Guest = () => {
             <label className='text-lg font-normal'>From</label>
             <span className='pl-2 text-gray-500'>{details?.comeFrom
             }</span>
-
-            <span className='pl-2 text-gray-500'>{details?.comeFrom}</span>
           </div>
           <div className='information flex flex-col'>
             <label className='text-lg font-normal'>Date</label>
@@ -95,8 +93,6 @@ const Guest = () => {
             <span className='pl-1 text-gray-500'>{details?.receiverPhoneNumber}</span>
           </div>
           <div className='information flex flex-col'>
-            <label className='text-lg font-normal'>Call sign</label>
-            <span className='pl-1 text-gray-500'>{details?.Host?.callSign}</span>
             <label className='text-lg font-normal'>Host/Call sign</label>
             <span className='pl-1 text-gray-500'>{details?.Host?.hostName}/ {details?.Host?.callSign}</span>
           </div>
