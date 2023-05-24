@@ -20,8 +20,8 @@ export default function LeftNav() {
   const [links, setLinks] = useState([])
 
   const navLinks = [
-    { url: '/home', ref: 'dashboard', icon: <DashboardIcon className="icons" />, privacy: 'private' },
-    { url: '/add-guest', ref: 'Add guest', icon: <GroupAddIcon className="icons" />, privacy: 'private' },
+    { url: '/home', ref: 'dashboard', icon: <DashboardIcon className="icons" />, privacy: 'semi-private' },
+    { url: '/add-guest', ref: 'Add guest', icon: <GroupAddIcon className="icons" />, privacy: 'semi-private' },
     { url: '/guests/PENDING', ref: 'View guests', icon: <FormatListBulletedIcon className="icons" />, privacy: 'public' },
     { url: '/admin', ref: 'Admin', icon: <SettingsApplicationsIcon className="icons" />, privacy: 'private' },
   ]
@@ -33,6 +33,8 @@ export default function LeftNav() {
     } {
       if (auth?.user?.role === 'GATE')
         setLinks([...navLinks.filter(item => item.privacy === 'public')])
+      else if (auth?.user?.role === 'HOST' || auth?.user?.role === 'SECURITY OFFICER')
+        setLinks([...navLinks.filter(item => item.privacy === 'public' || item.privacy === 'semi-private')])
       else
         setLinks([...navLinks])
     }

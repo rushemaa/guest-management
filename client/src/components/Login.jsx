@@ -38,7 +38,7 @@ const Login = () => {
       if (auth.user.role === "ADMIN") {
         navigate("/home");
       } else {
-        navigate("/guests");
+        navigate("/guests/PENDING");
       }
     }
   }, [status]);
