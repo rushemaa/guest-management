@@ -100,6 +100,7 @@
     left: 45px;
     width: calc(100% - 45px);
     z-index: 1000;
+    padding: 0 1%;
   }
   .user-logo, .u-info, .nav-links h4 {
     display: none;
@@ -120,5 +121,33 @@
   }
   .entry-card {
     width: 99%!important;
+  }
+  .login {
+    position: relative;
+    width: 100%;
+    height: 100svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .login .l-side{
+    position: fixed;
+    min-width: 100%;
+    filter: blur(4px);
+  }
+  .login .r-side {
+    position: absolute;
+    overflow: auto;
+    min-width: 100%;
+    height: 100%;
+    padding: 0% 15%;
+    background-color: #015c54af;
+  }
+  .login .r-side h2, .login .r-side p {
+    color: whitesmoke;
+  }
+  .cards {
+    flex-flow: wrap !important;
+    gap: 10px;
   }
 }

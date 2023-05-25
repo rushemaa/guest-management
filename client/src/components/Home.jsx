@@ -38,9 +38,9 @@ export default function Home() {
             <label className='font-thin text-sm text-gray-500 leading-3 italic'>Information about our guest traffics</label>
           </div>
         </div>
-        <div className='flex flex-wrap mt-10'>
+        <div className='flex flex-wrap mt-10 gap-y-10'>
           {/* card */}
-          <div className='flex gap-2 min-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/ALL')}>
+          <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/ALL')}>
             <div className='bg-orange-100 p-3 rounded-2xl'><SelectAllTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-thin subpixel-antialiased'>All Guest</p>
@@ -49,7 +49,7 @@ export default function Home() {
           </div>
 
           {/* card */}
-          <div className='flex gap-2 min-w-[20%] hover:cursor-pointer' >
+          <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' >
             <div className='bg-pink-100 text-green p-3 rounded-xl'><HowToRegTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-extralight subpixel-antialiased'>In Guest</p>
@@ -58,7 +58,7 @@ export default function Home() {
           </div>
 
           {/* card */}
-          <div className='flex gap-2 min-w-[20%] hover:cursor-pointer'>
+          <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer'>
             <div className='bg-green-100 p-3 rounded-xl'><MeetingRoomTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Out Guest</p>
@@ -67,23 +67,23 @@ export default function Home() {
           </div>
 
           {/* card */}
-          <div className='flex gap-2 min-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/PENDING')}>
+          <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/PENDING')}>
             <div className='bg-red-100 text-green p-3 rounded-xl'><DirectionsWalkTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Pending</p>
               <p className='font-extralight subpixel-antialiased'>{
-                data.find(d => d.Status === 'PENDING')?.Number
+                (data.find(d => d.Status === 'PENDING')?.Number) ? data.find(d => d.Status === 'PENDING')?.Number : 0
               }</p>
             </div>
           </div>
 
           {/* card */}
-          <div className='flex gap-2 min-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/CANCELED')}>
+          <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/CANCELED')}>
             <div className='bg-violet-50 text-green p-3 rounded-xl'><NoAccountsTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Cancelled guest</p>
               <p className='font-extralight subpixel-antialiased'>{
-                data.find(d => d.Status === 'CANCELED')?.Number
+                (data.find(d => d.Status === 'CANCELED')?.Number) ? data.find(d => d.Status === 'CANCELED')?.Number : 0
               }</p>
             </div>
           </div>

@@ -72,20 +72,29 @@ export default function Guests() {
     setVisitorStatus(e.target.value);
   }
 
-
-
   useEffect(() => {
     getGuests(1)
   }, [visitStatus])
 
   const handleGuestDelete = (id) => {
-    axios.delete(BASE_URL + `/guest/delete/${id}`).then(
-      res => {
-        dispatch(setMessage({ type: 'success', message: res.data.message }));
-      }
-    ).catch(error => {
-      dispatch(setMessage({ type: 'error', message: error.response.data.message }))
-    });
+    const deletion = window.confirm('Are you sure you want to delete this guest');
+
+    if(deletion)
+      axios.delete(BASE_URL + `/guest/delete/${id}`).then(
+        res => {
+          setTimeout(() => getGuests(1), 50)
+          dispatch(setMessage({ type: 'success', message: res.data.message }));
+        }
+      ).catch(error => {
+        dispatch(setMessage({ type: 'error', message: error.response.data.message }))
+      });
+  }
+
+  const handleTableAction = (guestId) => {
+    if(event.target?.closest('span')?.classList?.contains('deletion'))
+      handleGuestDelete(guestId)
+    else
+      location.href = `/guest/${guestId}`
   }
 
 
@@ -120,15 +129,15 @@ export default function Guests() {
           <table className='w-full report-table'>
             <tr><th>#</th><th>Guest Names</th><th>Receiver</th><th>From</th><th>Date/Time</th><th className='flex justify-center'>Actions</th></tr>
             {filterRes?.map((guest, index) => (
-              <tr key={index}>
+              <tr key={index} onClick={() => handleTableAction(guest.randomReference)}>
                 <td>{index + 1}</td>
                 <td>{guest.guestFullName}</td>
                 <td>{guest.receiverFullName}</td>
                 <td>{guest.comeFrom}</td>
                 <td>{guest.date} {guest.time}</td>
                 <td className='flex gap-x-5 justify-center'>
-                  <PreviewTwoToneIcon className='cursor-pointer hover:scale-110' onClick={() => location.href = `/guest/${guest.randomReference}`} />
-                  <DeleteTwoToneIcon className='cursor-pointer text-red-800 hover:scale-110' onClick={() => handleGuestDelete(guest.randomReference)} />
+                  <span className='preview'><PreviewTwoToneIcon className='cursor-pointer hover:scale-110' /></span>
+                  <span className='deletion'><DeleteTwoToneIcon className='cursor-pointer text-red-800 hover:scale-110' /></span>
                 </td></tr>
             ))}
 

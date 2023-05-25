@@ -22,6 +22,7 @@ const EditGuest = ({ toggle, isToggled, data, postOp }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(`${name} ${value}`)
     setState({ ...state, [name]: value });
     if (name === 'HostId') {
       console.log(hosts?.filter(item => item.id == value))
@@ -254,7 +255,7 @@ const EditGuest = ({ toggle, isToggled, data, postOp }) => {
           <div className="relative z-0 w-2/5 mb-2 group">
             <select
               name='gate'
-              value={state?.Gate?.id}
+              value={state?.gate}
               onChange={(e) => { handleChange(e) }}
               className='block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer'
               placeholder=' '
@@ -325,7 +326,7 @@ const EditGuest = ({ toggle, isToggled, data, postOp }) => {
           </div>
         </div>
         <div className="input-group min-w-[100%] px-5">
-          <label for="status">Comments</label>
+          <label htmlFor="status">Comments</label>
           <textarea rows={3} name='comment' value={state?.comment} onChange={(e) => { handleChange(e) }} placeholder='Any comment ...' className='border border-gray-200 rounded p-3'></textarea>
         </div>
         <div className='flex justify-center mt-5'>

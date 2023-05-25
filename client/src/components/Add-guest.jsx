@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from 'react';
 export default function AddGuest() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const [state, setState] = useState({ entryMode: 'BY FOOT', transportation: [] });
+  const [state, setState] = useState({ entryMode: '', transportation: [] });
   const [car, setCar] = useState({});
   const [gates, setGates] = useState()
   const [hosts, setHosts] = useState([])
@@ -52,7 +52,7 @@ export default function AddGuest() {
 
   const handleEditCar = (car) => {
     setCar({ ...car })
-    handleEntryMode(car?.type === 'BY FOOT' ? '1' : car?.type === 'SELF DRIVING' ? '2' : '3')
+    handleEntryMode(car?.type === 'UNKNOWN' ? '1' : car?.type === 'SELF DRIVING' ? '2' : '3')
     handleDeleteCar(car)
   }
   const handleDeleteCar = (car) => {
@@ -88,7 +88,7 @@ export default function AddGuest() {
     e.preventDefault()
     isLoading(true)
     try {
-      const res = await axios.post(BASE_URL + '/guest/create', { ...state });
+      const res = await axios.post(BASE_URL + '/guest/create', { ...state, transportation: !state.transportation.length ? [{type: 'UNKNOWN'}]:[...transportation] });
       if (res.status === 200) {
         isLoading(false);
         navigate('/guests/PENDING')
@@ -134,7 +134,7 @@ export default function AddGuest() {
 
   const handleEntryMode = (value) => {
     isSelfDrive(value === '2')
-    setState({ ...state, entryMode: value === '1' ? "BY FOOT" : value === '2' ? 'SELF DRIVING' : 'DRIVER' })
+    setState({ ...state, entryMode: value === '1' ? "UNKNOWN" : value === '2' ? 'SELF DRIVING' : value === '3' ? "DRIVER":'' })
   }
 
   return (
@@ -164,7 +164,7 @@ export default function AddGuest() {
 
                     <div className="input-row">
                       <div className="input-group">
-                        <label for="guestFullName">Guest Names</label>
+                        <label htmlFor="guestFullName">Guest Names <span class='text-red-400'>*</span></label>
                         <input
                           type="text"
                           id="guestFullName"
@@ -174,7 +174,7 @@ export default function AddGuest() {
                         />
                       </div>
                       <div className="input-group">
-                        <label for="guestIdNumber">ID</label>
+                        <label htmlFor="guestIdNumber">ID</label>
                         <input
                           type="text"
                           id="guestIdNumber"
@@ -187,7 +187,7 @@ export default function AddGuest() {
 
                     <div className="input-row">
                       <div className="input-group">
-                        <label for="guestPhone">Phone</label>
+                        <label htmlFor="guestPhone">Phone <span class='text-red-400'>*</span></label>
                         <input
                           type="text"
                           id="guestPhone"
@@ -197,7 +197,7 @@ export default function AddGuest() {
                         />
                       </div>
                       <div className="input-group">
-                        <label for="comeFrom">From</label>
+                        <label htmlFor="comeFrom">From <span class='text-red-400'>*</span></label>
                         <input
                           type="text"
                           id="comeFrom"
@@ -210,7 +210,7 @@ export default function AddGuest() {
 
                     <div className="input-row">
                       <div className="input-group">
-                        <label for="date">Date</label>
+                        <label htmlFor="date">Date <span class='text-red-400'>*</span></label>
                         <input
                           type="date"
                           id="date"
@@ -220,7 +220,7 @@ export default function AddGuest() {
                         />
                       </div>
                       <div className="input-group">
-                        <label for="time">Time</label>
+                        <label htmlFor="time">Time <span class='text-red-400'>*</span></label>
                         <input
                           type="time"
                           id="time"
@@ -234,7 +234,7 @@ export default function AddGuest() {
 
                   <div className="input-row">
                     <div className="input-group">
-                      <label for="host">Host</label>
+                      <label htmlFor="host">Host <span class='text-red-400'>*</span></label>
                       <select id="host" name='HostId' onChange={(e) => { handleChange(e) }}>
                         <option value="">Select a Host</option>
                         {hosts?.map((item, key) => (
@@ -245,7 +245,7 @@ export default function AddGuest() {
                       </select>
                     </div>
                     <div className="input-group">
-                      <label for="call">Call sign/ extension</label>
+                      <label htmlFor="call">Call sign/ extension <span class='text-red-400'>*</span></label>
                       <input
                         type="text"
                         id="call"
@@ -262,7 +262,7 @@ export default function AddGuest() {
 
                     <div className="input-row">
                       <div className="input-group">
-                        <label for="receiverFullName">Receiver Names</label>
+                        <label htmlFor="receiverFullName">Receiver Names <span class='text-red-400'>*</span></label>
                         <input
                           type="text"
                           id="receiverFullName"
@@ -272,7 +272,7 @@ export default function AddGuest() {
                         />
                       </div>
                       <div className="input-group">
-                        <label for="rphone">Phone</label>
+                        <label htmlFor="rphone">Phone <span class='text-red-400'>*</span></label>
                         <input
                           type="text"
                           id="rphone"
@@ -286,7 +286,7 @@ export default function AddGuest() {
 
                   <div className="input-row">
                     <div className="input-group">
-                      <label for="status">Status</label>
+                      <label htmlFor="status">Status <span class='text-red-400'>*</span></label>
                       <select id="status" name='guestStatus' onChange={(e) => { handleChange(e) }}>
                         <option value="">Select</option>
                         <option value="VVIP">VVIP</option>
@@ -296,7 +296,7 @@ export default function AddGuest() {
                       </select>
                     </div>
                     <div className="input-group">
-                      <label for="state">Guest State</label>
+                      <label htmlFor="state">Guest State <span class='text-red-400'>*</span></label>
                       <select id="state" name='guestAnonymous' onChange={(e) => { handleChange(e) }}>
                         <option value="">Select</option>
                         <option value="ANONYMOUS">Anonymous</option>
@@ -307,7 +307,7 @@ export default function AddGuest() {
 
                   <div className="input-row">
                     <div className="input-group">
-                      <label for="gate">Gate</label>
+                      <label htmlFor="gate">Gate <span class='text-red-400'>*</span></label>
                       <select id="gate" name='gate' onChange={(e) => { handleChange(e) }}>
                         <option value="">Select Entance</option>
                         {gates?.map((item, key) => (
@@ -318,7 +318,7 @@ export default function AddGuest() {
                       </select>
                     </div>
                     <div className="input-group">
-                      <label for="conditions">Conditions</label>
+                      <label htmlFor="conditions">Conditions <span class='text-red-400'>*</span></label>
                       <select id="conditions" name='conditions' onChange={(e) => { handleChange(e) }}>
                         <option value="">Select Conditions</option>
                         <option value="Full search">Full search</option>
@@ -337,7 +337,7 @@ export default function AddGuest() {
                     </div>
                   </div>
                   <div className="input-group min-w-[100%]">
-                    <label for="status">Comments</label>
+                    <label htmlFor="status">Comments</label>
                     <textarea rows={5} name='comment' onChange={(e) => { handleChange(e) }} placeholder='Any comment ...' className='border border-gray-200 rounded p-3'></textarea>
                   </div>
 
@@ -361,10 +361,11 @@ export default function AddGuest() {
                     <fieldset className='p-5'>
                       <legend>Entry mode</legend>
                       <div className="input-group min-w-[100%]">
-                        <label for="gnames">Guest Entry Mode</label>
-                        <select value={state?.entryMode} onChange={(e) => { handleEntryMode(e.target.value) }}>
-                          <option value="">Choose guest entry mode</option>
-                          <option value='1'> on foot </option>
+                        <label htmlFor="gnames">Guest Entry Mode <span class='text-red-400'>*</span></label>
+                        <select value={state?.entryMode === 'UNKNOWN' ? '1' : (state?.entryMode === 'SELF DRIVING') ? '2' : state?.entryMode === 'DRIVER' ? '3': ''} 
+                        onChange={(e) => { handleEntryMode(e.target.value) }}>
+                          <option disabled value="">Choose guest entry mode</option>
+                          <option value='1'> unknown </option>
                           <option value='2'> self drive </option>
                           <option value='3'> driver </option>
                         </select>
@@ -374,13 +375,13 @@ export default function AddGuest() {
 
                   <div className="flex flex-wrap justify-between min-h-[20%] gap-2">
                     {
-                      state?.entryMode !== 'BY FOOT' ? (
+                      (state?.entryMode === 'DRIVER' || state?.entryMode === 'SELF DRIVING') ? (
                         <>
                           <div class="entry-card">
                             <fieldset class='flex flex-col gap-3 p-5'>
                               <legend>Car & driver</legend>
                               <div class="input-group min-w-[100%]">
-                                <label for="gnames">Car plate <span class='text-red-400'>*</span></label>
+                                <label htmlFor="gnames">Car plate <span class='text-red-400'>*</span></label>
                                 <input
                                   type="text"
                                   id="plateNumber"
@@ -391,7 +392,7 @@ export default function AddGuest() {
                                 />
                               </div>
                               <div class="input-group min-w-[100%]">
-                                <label for="gnames">Model</label>
+                                <label htmlFor="gnames">Model</label>
                                 <input
                                   type="text"
                                   id="model"
@@ -402,7 +403,7 @@ export default function AddGuest() {
                                 />
                               </div>
                               <div class="input-group min-w-[100%]">
-                                <label for="gnames">Color</label>
+                                <label htmlFor="gnames">Color</label>
                                 <input
                                   type="text"
                                   id="color"
@@ -413,7 +414,7 @@ export default function AddGuest() {
                                 />
                               </div>
                               <div class={!(selfDrive) ? '' : 'hidden'}>
-                                <label for="gnames">Driver name <span class='text-red-400'>*</span></label>
+                                <label htmlFor="gnames">Driver name <span class='text-red-400'>*</span></label>
                                 <input class="input-group min-w-[100%]"
                                   type="text"
                                   id="driver"
@@ -424,7 +425,7 @@ export default function AddGuest() {
                                 />
                               </div>
                               <div class={!(selfDrive) ? '' : 'hidden'}>
-                                <label for="gnames">Driver contact <span class='text-red-400'>*</span></label>
+                                <label htmlFor="gnames">Driver contact <span class='text-red-400'>*</span></label>
                                 <input class="input-group min-w-[100%]"
                                   type="text"
                                   id="contact"
@@ -435,7 +436,7 @@ export default function AddGuest() {
                                 />
                               </div>
                               <div class={!(selfDrive) ? '' : 'hidden'}>
-                                <label for="gnames">Driver Id number</label>
+                                <label htmlFor="gnames">Driver Id number</label>
                                 <input class="input-group min-w-[100%]"
                                   type="text"
                                   id="id"

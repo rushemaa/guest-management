@@ -48,16 +48,16 @@ const Login = () => {
     setState({ ...state, [name]: value });
   };
   return (
-    <div className="login">
+    <div className="login flex gap-10">
       <Alert />
-      <div className="l-side">
+      <div className="l-side h-[100svh] flex justify-center items-center">
         <h1>GUEST MANAGEMENT SYSTEM</h1>
         <img alt="logo" src={Logo} />
       </div>
-      <div className="r-side">
+      <div className="r-side h-[100svh] flex justify-center">
         <h2>LOGIN</h2>
         <p>Welcome back! It's good to have you here again.</p>
-        <form>
+        <form className='w-full'>
           <input
             type="text"
             name="username"

@@ -77,7 +77,7 @@ const TransportCU = ({ toggle, isToggled, data, id, postOp }) => {
               <option className='text-xs' value=''>
                 Choose Entry mode *{state?.type}
               </option>
-              {['BY FOOT', 'SELF DRIVING', 'DRIVER'].map((item, key) => (
+              {['UNKNOWN', 'SELF DRIVING', 'DRIVER'].map((item, key) => (
                 <option key={key} className='text-xs' value={item}>
                   {item}
                 </option>

@@ -8,7 +8,7 @@ const GuestInfoFrm = () => {
 
             <div className="input-row">
               <div className="input-group">
-                <label for="gnames">Guest Names</label>
+                <label htmlFor="gnames">Guest Names</label>
                 <input
                   type="text"
                   id="gnames"
@@ -17,7 +17,7 @@ const GuestInfoFrm = () => {
                 />
               </div>
               <div className="input-group">
-                <label for="idnum">ID</label>
+                <label htmlFor="idnum">ID</label>
                 <input
                   type="text"
                   id="idnum"
@@ -29,7 +29,7 @@ const GuestInfoFrm = () => {
 
             <div className="input-row">
               <div className="input-group">
-                <label for="phone">Phone</label>
+                <label htmlFor="phone">Phone</label>
                 <input
                   type="text"
                   id="phone"
@@ -38,7 +38,7 @@ const GuestInfoFrm = () => {
                 />
               </div>
               <div className="input-group">
-                <label for="from">From</label>
+                <label htmlFor="from">From</label>
                 <input
                   type="text"
                   id="from"
@@ -50,7 +50,7 @@ const GuestInfoFrm = () => {
 
             <div className="input-row">
               <div className="input-group">
-                <label for="date">Date</label>
+                <label htmlFor="date">Date</label>
                 <input
                   type="date"
                   id="date"
@@ -59,7 +59,7 @@ const GuestInfoFrm = () => {
                 />
               </div>
               <div className="input-group">
-                <label for="time">Time</label>
+                <label htmlFor="time">Time</label>
                 <input
                   type="time"
                   id="time"
@@ -72,7 +72,7 @@ const GuestInfoFrm = () => {
 
           <div className="input-row">
             <div className="input-group">
-              <label for="host">Host</label>
+              <label htmlFor="host">Host</label>
               <select id="host">
                 <option value="">Select a Host</option>
                 <option value="HDI">HDI</option>
@@ -82,7 +82,7 @@ const GuestInfoFrm = () => {
               </select>
             </div>
             <div className="input-group">
-              <label for="call">Call sign/ extension</label>
+              <label htmlFor="call">Call sign/ extension</label>
               <input
                 type="text"
                 id="call"
@@ -97,7 +97,7 @@ const GuestInfoFrm = () => {
 
             <div className="input-row">
               <div className="input-group">
-                <label for="receiver">Receiver Names</label>
+                <label htmlFor="receiver">Receiver Names</label>
                 <input
                   type="text"
                   id="receiver"
@@ -106,7 +106,7 @@ const GuestInfoFrm = () => {
                 />
               </div>
               <div className="input-group">
-                <label for="rphone">Phone</label>
+                <label htmlFor="rphone">Phone</label>
                 <input
                   type="text"
                   id="rphone"
@@ -119,7 +119,7 @@ const GuestInfoFrm = () => {
 
           <div className="input-row">
             <div className="input-group">
-              <label for="status">Status</label>
+              <label htmlFor="status">Status</label>
               <select id="status">
                 <option value="">Select</option>
                 <option value="VVIP">VVIP</option>
@@ -132,7 +132,7 @@ const GuestInfoFrm = () => {
 
           <div className="input-row">
             <div className="input-group">
-              <label for="gate">Gate</label>
+              <label htmlFor="gate">Gate</label>
               <select id="gate">
                 <option value="">Select Entance</option>
                 <option value="VI">VIP Gate</option>
@@ -143,7 +143,7 @@ const GuestInfoFrm = () => {
               </select>
             </div>
             <div className="input-group">
-              <label for="conditions">Conditions</label>
+              <label htmlFor="conditions">Conditions</label>
               <select id="conditions">
                 <option value="">Select Conditions</option>
                 <option value="Full search">Full search</option>
@@ -162,7 +162,7 @@ const GuestInfoFrm = () => {
             </div>
           </div>
           <div className="input-group min-w-[100%]">
-            <label for="status">Comments</label>
+            <label htmlFor="status">Comments</label>
             <textarea rows={5} placeholder='Any comment ...' className='border border-gray-200 rounded p-3'></textarea>
           </div>
 
