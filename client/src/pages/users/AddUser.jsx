@@ -96,7 +96,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
       isToggled={isToggled}
     >
       <form className="py-3" onSubmit={(e) => handleSubmit(e)}>
-        <div className="flex justify-around mt-5">
+        <div className="flex justify-around mt-2">
           <div className="relative z-0 w-2/5 mb-2 group">
             <input
               type="text"
@@ -154,7 +154,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
             )}
           </div>
         </div>
-        <div className="flex justify-around mt-5">
+        <div className="flex justify-around mt-2">
           <div className="relative z-0 w-2/5 mb-2 group">
             <input
               type="text"
@@ -296,7 +296,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
         ) : (
           ""
         )}
-        <div className={`flex justify-around ${state?.id ? "hidden" : ""}`}>
+        <div className={`flex justify-around ${state?.id ? "hidden" : ""} mt-2`}>
           <div className="relative z-0 w-2/5 mb-2 group">
             <input
               type="password"

@@ -1,4 +1,5 @@
 import React from 'react'
+import NButton from './buttons/NButton'
 
 const GuestInfoFrm = () => {
   return (
