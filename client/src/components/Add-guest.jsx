@@ -88,7 +88,7 @@ export default function AddGuest() {
     e.preventDefault()
     isLoading(true)
     try {
-      const res = await axios.post(BASE_URL + '/guest/create', { ...state, transportation: !state.transportation.length ? [{type: 'UNKNOWN'}]:[...transportation] });
+      const res = await axios.post(BASE_URL + '/guest/create', { ...state, transportation: !state.transportation.length ? [{type: 'UNKNOWN'}]:[...state?.transportation] });
       if (res.status === 200) {
         isLoading(false);
         navigate('/guests/PENDING')

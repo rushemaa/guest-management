@@ -18,6 +18,7 @@ export default function Home() {
   useEffect(()=>{
     axios.get(BASE_URL + '/dashboard/dashStats')
     .then(res => {
+      console.log(res.data.data.flat())
       setData(res.data.data.flat());
     })
     .catch(error => {
@@ -49,20 +50,24 @@ export default function Home() {
           </div>
 
           {/* card */}
-          <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' >
+          <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/IN')}>
             <div className='bg-pink-100 text-green p-3 rounded-xl'><HowToRegTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-extralight subpixel-antialiased'>In Guest</p>
-              <p className='font-extralight subpixel-antialiased'>10</p>
+              <p className='font-extralight subpixel-antialiased'>{
+                (data.find(d => d.Status === 'IN')?.Number) ? data.find(d => d.Status === 'IN')?.Number : 0
+              }</p>
             </div>
           </div>
 
           {/* card */}
-          <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer'>
+          <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/OUT')}>
             <div className='bg-green-100 p-3 rounded-xl'><MeetingRoomTwoToneIcon color='success' /></div>
             <div className="details">
               <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Out Guest</p>
-              <p className='font-extralight subpixel-antialiased'>40</p>
+              <p className='font-extralight subpixel-antialiased'>{
+                (data.find(d => d.Status === 'OUT')?.Number) ? data.find(d => d.Status === 'OUT')?.Number : 0
+              }</p>
             </div>
           </div>
 

@@ -157,7 +157,7 @@ const EditGuest = ({ toggle, isToggled, data, postOp }) => {
           <div className="relative z-0 w-2/5 mb-2 group">
             <select
               name='HostId'
-              value={state?.Host?.id}
+              value={state?.HostId}
               onChange={(e) => { handleChange(e) }}
               className='block text-sm pl-2 py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer'
               placeholder=' '
@@ -170,6 +170,10 @@ const EditGuest = ({ toggle, isToggled, data, postOp }) => {
                 </option>
               ))}
             </select>
+            <label htmlFor=""
+              className="absolute text-sm text-gray-900 duration-300 font-normal transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              Choose the host
+            </label>
           </div>
           <div className="relative z-0 w-2/5 mb-2 group">
             <input type="text" name="callSign"
@@ -313,7 +317,7 @@ const EditGuest = ({ toggle, isToggled, data, postOp }) => {
               required=''
               autoComplete='off'>
               <option value="">Select Visit status</option>
-              {['CANCELLED', 'POSTPONED', 'PENDING', 'VISITED']?.map((item, key) => (
+              {['CANCELED', 'PENDING']?.map((item, key) => (
                 <option key={key} className='text-xs' value={item}>
                   {item}
                 </option>

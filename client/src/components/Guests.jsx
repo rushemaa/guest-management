@@ -112,7 +112,8 @@ export default function Guests() {
               <select onChange={handleVisitStatus}>
                 <option selected={status === "PENDING" ? true : false } value="PENDING">pending guest</option>
                 <option selected={status === "CANCELED" ? true : false } value="CANCELED">cancelled guest</option>
-                <option selected={status === "VISITED" ? true : false } value="VISITED">visited guest</option>
+                <option selected={status === "IN" ? true : false } value="IN">guest in</option>
+                <option selected={status === "OUT" ? true : false } value="OUT">guest out</option>
                 <option selected={status === "ALL" ? true : false } value="ALL">all guest status</option>
               </select>
             </label>

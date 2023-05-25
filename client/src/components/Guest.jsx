@@ -70,11 +70,18 @@ const Guest = () => {
     }
     axios.put(BASE_URL + '/guest/updateVisitStatus', data).then(res => {
       if (res.status === 200)
-      setTimeout(() => getGuest(), 50)
+      setTimeout(() => {
+        if (userType === 'GATE')
+          navigate('/guests/PENDING');
+        else
+          getGuest()
+      }, 50)
         dispatch(setMessage({ type: 'success', message: res.data.message }));
     }).catch(error => {
       dispatch(setMessage({ type: 'error', message: error.response.data.message }))
     });
+
+    console.log(userType)
   }
 
   const handleEdit = (type, data) => {
@@ -150,8 +157,9 @@ const Guest = () => {
             {/* <span className='pl-1 text-gray-500'>{details?.visitStatus}</span> */}
             <span className='text-gray-500'>
               <select onChange={handleVisitStatusChange}>
-                <option value="PENDING" selected={details?.visitStatus === "PENDING" ? "true" : "false"}>Pending</option>
-                <option value="VISITED" selected={details?.visitStatus === "VISITED" ? "true" : "false"}>Visited</option>
+                <option value="PENDING" selected={details?.visitStatus === "PENDING" ? true : false}>Pending</option>
+                <option value="IN" selected={details?.visitStatus === "IN" ? true : false}>Visitor In</option>
+                {(userType !== "GATE") && <option value="OUT" selected={details?.visitStatus === "OUT" ? true : false}>Visitor Out</option>}
               </select>
             </span>
           </div>
