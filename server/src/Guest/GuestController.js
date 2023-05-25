@@ -11,10 +11,18 @@ const Host = require("../Host/HostModel");
 const createGuest = async (req, res, next) => {
   try {
     let user = req.user.user;
+
+    if (!["HOST", "ADMIN"].includes(user.role)) throw "access denied 😡";
+    for (const [key, value] of Object.entries(req.body)) {
+      if (value === "undefined" || value === null || value.length === 0) {
+        req.body[key] = null;
+      }
+    }
     let dt = req.body;
+
     if (!["VIP", "VVIP", "NORMAL", "SENIOR OFFICIAL"].includes(dt.guestStatus))
       throw "guest status is required";
-    if (!["HOST", "ADMIN"].includes(user.role)) throw "access denied 😡";
+
     if (!dt.date || dt.date === "") throw "please enter guest visit date";
     if (!dt.time || dt.time === "") throw "please enter guest visit time";
     let tim = `${dt.date} ${dt.time}`;
@@ -33,14 +41,16 @@ const createGuest = async (req, res, next) => {
     if (typeof dt.transportation[0] !== "object")
       throw "transportation should contain object of vehicle data";
     let trans_data = dt.transportation.map((x) => {
+      if (!["UNKNOWN", "SELF DRIVING", "DRIVER"].includes(x.type))
+        throw `unknown transportation mode ${x.type}`;
       if (!x.type || x.type === null)
         throw "invalid visitor transportation type";
-      if (x.type !== "BY FOOT" && (!x.plateNumber || x.plateNumber === null))
+      if (x.type !== "UNKNOWN" && (!x.plateNumber || x.plateNumber === null))
         throw "please enter  vehicle plate number";
-      if (x.type === "SELF DRIVE") x.driverFullName = dt.guestFullName;
+      // if (x.type === "SELF DRIVING") x.driverFullName = dt.guestFullName;
       return {
         plateNumber: x.plateNumber || null,
-        type: x.type,
+        transportType: x.type,
         vehicleColour: x.vehicleColour || null,
         vehicleModel: x.vehicleModel || null,
         driverFullName: x.driverFullName || null,
@@ -58,38 +68,44 @@ const createGuest = async (req, res, next) => {
       }
       return ran;
     };
-    let resu = sequelize.transaction(async (t) => {
-      dt.guestKeys = "";
-      dt.randomReference = rand();
-      let guest = await Guest.create(dt, { transaction: t });
 
-      trans_data.forEach((x) => {
-        x.GuestId = guest.id;
-      });
+    // return res.status(333).json(trans_data);
+    let resu = sequelize
+      .transaction(async (t) => {
+        dt.guestKeys = "";
+        dt.randomReference = rand();
+        let guest = await Guest.create(dt, { transaction: t });
 
-      let transport = await Transport.bulkCreate(trans_data, {
-        transaction: t,
+        trans_data.forEach((x) => {
+          x.GuestId = guest.id;
+        });
+
+        await Transport.bulkCreate(trans_data, {
+          transaction: t,
+        });
+      })
+      .then(() => {
+        return res.status(200).json({ status: "ok", message: "guest saved" });
+      })
+      .catch((err) => {
+        if (
+          [
+            "SequelizeValidationError",
+            "SequelizeUniqueConstraintError",
+          ].includes(err.name)
+        )
+          err = err.errors[0].message;
+        return res.status(412).json({ status: "fail", message: err });
       });
-    });
-    return res.status(200).json({ status: "ok", message: "guest saved" });
   } catch (err) {
-    console.log(err);
     if (
       [
         "SequelizeUniqueConstraintError",
         "SequelizeValidationError",
         "ValidationErrorItem",
       ].includes(err.name)
-    ) {
+    )
       err = err.errors[0].message;
-    } else if (
-      ["SequelizeDatabaseError", "SequelizeForeignKeyConstraintError"].includes(
-        err.name
-      )
-    ) {
-      err = err.parent.sqlMessage;
-    }
-
     res.status(412).json({ status: "fail", message: err });
   }
 };
@@ -125,8 +141,8 @@ const findAll = async (req, res) => {
       attributes = {};
       let result = await Guest.findAndCountAll({
         where,
-        offset: page * size,
-        limit: size,
+        // offset: page * size,
+        // limit: size,
         attributes: {
           exclude: [
             "id",
@@ -184,13 +200,13 @@ const findAll = async (req, res) => {
       return res.status(200).json({
         status: "ok",
         data: data,
-        totalPages: Math.ceil(result.count / size),
+        // totalPages: Math.ceil(result.count / size),
       });
     } else if (["HOST", "SECURITY OFFICER", "ADMIN"].includes(user.role)) {
       where = {
         visitStatus:
           visitStatus === "ALL"
-            ? ["CANCELED", "PENDING", "POSTPONED", "VISITED"]
+            ? ["CANCELED", "PENDING", "IN", "OUT"]
             : visitStatus,
         date: { [Op.gte]: new Date() },
       };
@@ -261,7 +277,7 @@ const getGuest = async (req, res, next) => {
 
       where = {
         randomReference: randomReference,
-        visitStatus: "PENDING",
+        // visitStatus: "PENDING",
         gate: getUserGate.GateId,
       };
       let findGuest = await Guest.findOne({
@@ -413,7 +429,7 @@ const updateVisitStatus = async (req, res, next) => {
       throw "please enter random reference 😡";
 
     if (user.role === "GATE") {
-      visitStatus = "VISITED";
+      visitStatus = "IN";
       let getUserGate = await Account.findOne({
         where: { username: user.username, status: "ACTIVE" },
         attributes: ["GateId", "id"],
@@ -423,7 +439,7 @@ const updateVisitStatus = async (req, res, next) => {
       where.visitStatus = "PENDING";
     } else {
       if (
-        !["CANCELED", "PENDING", "POSTPONED", "VISITED"].includes(visitStatus)
+        !["CANCELED", "PENDING", "POSTPONED", "IN", "OUT"].includes(visitStatus)
       )
         throw "Invalid visit status 😡";
       if (visitStatus === "POSTPONED") {
@@ -440,7 +456,7 @@ const updateVisitStatus = async (req, res, next) => {
     searchGuest.update({ visitStatus: visitStatus });
     return res.status(200).json({
       status: "ok",
-      message: "Guest visit status has been successfully updated ✅",
+      message: `Guest visit status has been successfully changed to ${visitStatus} ✅`,
     });
   } catch (err) {
     console.log(err);
@@ -521,12 +537,12 @@ const guestSearch = async (req, res, next) => {
       let data = result.map((x) => {
         return {
           guestFullName:
-            x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx xxx" : x.guestFullName,
+            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestFullName,
           guestIdNumber:
-            x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx" : x.guestIdNumber,
+            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestIdNumber,
           guestPhone:
-            x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx" : x.guestPhone,
-          comeFrom: x.guestAnonymous === "ANONYMOUS" ? "xxxxxxx" : x.comeFrom,
+            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestPhone,
+          comeFrom: x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.comeFrom,
           time: x.time,
           date: x.date,
           receiverFullName: x.receiverFullName,
@@ -658,7 +674,7 @@ const deleteGuest = async (req, res, next) => {
     const findGuest = await Guest.findOne({
       where: {
         randomReference: randomReference,
-        visitStatus: { [Op.ne]: "VISITED" },
+        visitStatus: { [Op.ne]: "OUT" },
       },
     });
 
@@ -744,13 +760,13 @@ const addTransport = async (req, res) => {
       (await Guest.count({
         where: {
           randomReference: dt.randomReference,
-          visitStatus: { [Op.notIn]: ["VISITED", "CANCELED"] },
+          visitStatus: { [Op.notIn]: ["IN", "OUT", "CANCELED"] },
         },
       })) === 0
     )
       throw "please enter correct guest randon reference key ";
 
-    if (!dt.type || !["SELF DRIVING", "DRIVER", "BY FOOT"].includes(dt.type))
+    if (!dt.type || !["SELF DRIVING", "DRIVER", "UNKNOWN"].includes(dt.type))
       throw "Invalid transport type";
 
     if (
@@ -758,10 +774,11 @@ const addTransport = async (req, res) => {
       (!dt.plateNumber || dt.plateNumber === null)
     )
       throw "plate number is required";
+
     let guest = await Guest.findOne({
       where: {
         randomReference: dt.randomReference,
-        visitStatus: { [Op.notIn]: ["VISITED", "CANCELED"] },
+        visitStatus: { [Op.notIn]: ["OUT", "IN", "CANCELED"] },
       },
     });
     let obj = {
@@ -810,6 +827,12 @@ const updateGuest = async (req, res) => {
 
     if (!["HOST", "ADMIN"].includes(user.role)) throw "Access denied 😡";
 
+    for (const [key, value] of Object.entries(req.body)) {
+      if (value === "undefined" || value === null || value.length === 0) {
+        req.body[key] = null;
+      }
+    }
+
     let dt = req.body;
 
     if (!["VIP", "VVIP", "NORMAL", "SENIOR OFFICIAL"].includes(dt.guestStatus))
@@ -819,7 +842,7 @@ const updateGuest = async (req, res) => {
     let findGuest = await Guest.findOne({
       where: {
         randomReference: dt.randomReference,
-        visitStatus: { [Op.notIn]: ["VISITED", "CANCELED"] },
+        visitStatus: { [Op.notIn]: ["OUT"] },
       },
     });
 
@@ -847,7 +870,9 @@ const updateGuest = async (req, res) => {
       throw "Invalid guest Status";
     if (
       dt.visitStatus &&
-      !["PENDING", "VISITED", "POSTPONED"].includes(dt.visitStatus)
+      !["PENDING", "IN", "OUT", "CANCELED", "POSTPONED"].includes(
+        dt.visitStatus
+      )
     )
       throw "Invalid guest visit Status";
     findGuest.update(dt);
@@ -875,11 +900,17 @@ const updateTransport = async (req, res) => {
 
     if (!["HOST", "ADMIN"].includes(user.role)) throw "Access denied 😡";
 
+    for (const [key, value] of Object.entries(req.body)) {
+      if (value === "undefined" || value === null || value.length === 0) {
+        req.body[key] = null;
+      }
+    }
+
     let dt = req.body;
 
     if (!dt.id || dt.id === null) throw "Please enter valid id 🥵";
 
-    if (!dt.type || !["SELF DRIVING", "DRIVER", "BY FOOT"].includes(dt.type))
+    if (!dt.type || !["SELF DRIVING", "DRIVER", "UNKNOWN"].includes(dt.type))
       throw "Invalid transport type";
 
     if (
@@ -895,7 +926,7 @@ const updateTransport = async (req, res) => {
       include: {
         model: Guest,
         required: true,
-        where: { visitStatus: { [Op.notIn]: ["VISITED", "CANCELED"] } },
+        where: { visitStatus: { [Op.notIn]: ["IN", "OUT", "CANCELED"] } },
         attributes: ["randomReference", "visitStatus"],
       },
     });

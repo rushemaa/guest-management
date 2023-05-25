@@ -5,12 +5,6 @@ const getDashboardData = async (req, res) => {
     let user = req.user.user;
     if (user.role === "GATE") throw "Access denied 🥵";
     let result = await dashBoardData();
-    let resul = [
-      { Status: "PENDING", Number: 0 },
-      { Status: "CANCELED", Number: 0 },
-      { Status: "VISITED", Number: 0 },
-    ];
-    for (var i = 0; i < resul.length; i++) {}
     return res.status(200).json({ status: "ok", data: result });
   } catch (err) {
     console.log(err);

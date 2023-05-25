@@ -27,7 +27,13 @@ const Guest = sequelize.define(
     },
     comeFrom: {
       type: DataTypes.STRING(40),
-      allowNull: true,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg: "please enter where guest is coming from",
+        },
+      },
     },
     time: {
       type: DataTypes.TIME,
@@ -75,7 +81,7 @@ const Guest = sequelize.define(
       validate: {
         notNull: {
           args: true,
-          msg: "conditions can not be null",
+          msg: "conditions can not be empty",
         },
       },
     },
@@ -105,11 +111,11 @@ const Guest = sequelize.define(
       allowNull: true,
     },
     visitStatus: {
-      type: DataTypes.ENUM("CANCELED", "PENDING", "VISITED", "POSTPONED"),
+      type: DataTypes.ENUM("CANCELED", "PENDING", "IN","OUT"),
       defaultValue: "PENDING",
       validate: {
         isIn: {
-          args: [["CANCELED", "PENDING", "VISITED", "POSTPONED"]],
+          args: [["CANCELED", "PENDING", "IN", "OUT"]],
           msg: "Invalid visit status",
         },
       },

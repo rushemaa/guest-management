@@ -20,11 +20,11 @@ const Transport = sequelize.define(
       allowNull: true,
     },
     transportType: {
-      type: DataTypes.ENUM("SELF DRIVING", "DRIVER", "BY FOOT"),
+      type: DataTypes.ENUM("SELF DRIVING", "DRIVER", "UNKNOWN"),
       allowNull: false,
       validate: {
         isIn: {
-          args: [["SELF DRIVING", "DRIVER", "BY FOOT"]],
+          args: [["SELF DRIVING", "DRIVER", "UNKNOWN"]],
           msg: "Please select way of transport",
         },
       },
