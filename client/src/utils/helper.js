@@ -1,6 +1,5 @@
 export const weeklyOptions = (pending, inGuest, outGuest) => {
-  
-  console.log(inGuest)
+  // console.log(outGuest)
 
   return {
     title: {

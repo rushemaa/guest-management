@@ -16,9 +16,9 @@ import * as helper from '../utils/helper'
 
 export default function Home() {
   const chartsRef = useRef();
-  const [pending, setPending] = useState(new Array(7).fill(0));
-  const [inGuest, setInGuest] = useState(new Array(7).fill(0))
-  const [outGuest, setOutGuest] = useState(new Array(7).fill(0))
+  // const [pending, setPending] = useState(new Array(7).fill(0));
+  // const [inGuest, setInGuest] = useState(new Array(7).fill(0))
+  // const [outGuest, setOutGuest] = useState(new Array(7).fill(0))
   const [data, setData] = useState([]);
   const navigate = useNavigate();
 
@@ -31,28 +31,28 @@ export default function Home() {
     .catch(error => {
       dispatch(setMessage({ type: 'error', message: error.response.data.message }))
     });
-  }, []);
-
-  useEffect(() => {
-    axios.get(BASE_URL + "/dashboard/weeklyData").then(data => {
+    
+    axios.get(BASE_URL + "/dashboard/weeklyData").then(res => {
       // console.log(data);
       const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-      
-      data.data.data.forEach(d => {
-        if(d.status === 'PENDING') {
-          // console.log(d.visitday)
-          setPending([...pending, pending[days.indexOf(d.visitday)] = d.number])
-        }
+      const pending = new Array(7).fill(0)
+      const inGuest = new Array(7).fill(0)
+      const outGuest = new Array(7).fill(0)
+      res.data.data.forEach(d => {
+        if(d.status === 'PENDING')
+          // setPending([...pending, pending[days.indexOf(d.visitday)] = d.number])
+          pending[days.indexOf(d.visitday)] = d.number
         else if(d.status === 'IN')
-          setInGuest([...inGuest, inGuest[days.indexOf(d.visitday)] = d.number])
+          // setInGuest([...inGuest, inGuest[days.indexOf(d.visitday)] = d.number])
+          inGuest[days.indexOf(d.visitday)] = d.number
         else if(d.status === 'OUT')
-          setOutGuest([...outGuest, outGuest[days.indexOf(d.visitday)] = d.number])
+          // setOutGuest([...outGuest, outGuest[days.indexOf(d.visitday)] = d.number])
+          outGuest[days.indexOf(d.visitday)] = d.number
       })
-    });
-
-    const weekly = echarts?.init(chartsRef?.current);
-    weekly?.setOption(helper?.weeklyOptions(pending, inGuest, outGuest));
-  }, [data])
+      const weekly = echarts?.init(chartsRef?.current);
+      weekly?.setOption(helper?.weeklyOptions(pending, inGuest, outGuest));
+    }).catch(error => dispatch(setMessage({ type: 'error', message: error.response.data.message })));
+  }, [])
 
   return (
     <div className="App">
