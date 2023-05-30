@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import LeftNav from './Leftnav';
 import SelectAllTwoToneIcon from '@mui/icons-material/SelectAllTwoTone';
 import HowToRegTwoToneIcon from '@mui/icons-material/HowToRegTwoTone';
@@ -10,21 +10,49 @@ import { BASE_URL } from '../utils/constants';
 import Alert from './feedback/Alert';
 import { useNavigate } from 'react-router-dom';
 
-export default function Home() {
+import * as echarts from 'echarts';
+import * as helper from '../utils/helper'
 
+
+export default function Home() {
+  const chartsRef = useRef();
+  const [pending, setPending] = useState(new Array(7).fill(0));
+  const [inGuest, setInGuest] = useState(new Array(7).fill(0))
+  const [outGuest, setOutGuest] = useState(new Array(7).fill(0))
   const [data, setData] = useState([]);
   const navigate = useNavigate();
 
   useEffect(()=>{
     axios.get(BASE_URL + '/dashboard/dashStats')
     .then(res => {
-      console.log(res.data.data.flat())
+      // console.log(res.data)
       setData(res.data.data.flat());
     })
     .catch(error => {
       dispatch(setMessage({ type: 'error', message: error.response.data.message }))
     });
   }, []);
+
+  useEffect(() => {
+    axios.get(BASE_URL + "/dashboard/weeklyData").then(data => {
+      // console.log(data);
+      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+      
+      data.data.data.forEach(d => {
+        if(d.status === 'PENDING') {
+          // console.log(d.visitday)
+          setPending([...pending, pending[days.indexOf(d.visitday)] = d.number])
+        }
+        else if(d.status === 'IN')
+          setInGuest([...inGuest, inGuest[days.indexOf(d.visitday)] = d.number])
+        else if(d.status === 'OUT')
+          setOutGuest([...outGuest, outGuest[days.indexOf(d.visitday)] = d.number])
+      })
+    });
+
+    const weekly = echarts?.init(chartsRef?.current);
+    weekly?.setOption(helper?.weeklyOptions(pending, inGuest, outGuest));
+  }, [data])
 
   return (
     <div className="App">
@@ -91,6 +119,18 @@ export default function Home() {
                 (data.find(d => d.Status === 'CANCELED')?.Number) ? data.find(d => d.Status === 'CANCELED')?.Number : 0
               }</p>
             </div>
+          </div>
+        </div>
+{/* ref={chartsRef} */}
+        <div style={{ width: '100%', height: 'auto', padding: '30px 0px'}}>
+          <p className='font-bold'>
+            Guests traffic and analytics<br></br>
+            <span className='text-sm font-thin text-gray-500'>analytic details about incoming guest</span>
+          </p>
+          <div className="flex flex-wrap w-[100%] pt-5">
+            <div className="w-full h-[400px] bg-gray-100 p-2" ref={chartsRef}> </div>
+            {/* <div className="w-1/2 h-[400px]" ref={chartsRef}> </div> */}
+            {/* <div className="w-1/2 h-[400px]" ref={chartsRef}> </div> */}
           </div>
         </div>
 
