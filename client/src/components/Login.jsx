@@ -35,9 +35,10 @@ const Login = () => {
 
   useEffect(() => {
     if (status) {
-      if (auth.user.role === "ADMIN") {
+      if (!(auth.user.role === "GATE")) {
         navigate("/home");
-      } else {
+      } 
+      else {
         navigate("/guests/PENDING");
       }
     }
