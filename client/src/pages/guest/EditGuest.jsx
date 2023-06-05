@@ -317,7 +317,7 @@ const EditGuest = ({ toggle, isToggled, data, postOp }) => {
               required=''
               autoComplete='off'>
               <option value="">Select Visit status</option>
-              {['CANCELED', 'PENDING']?.map((item, key) => (
+              {['CANCELED', 'PENDING', 'POSTPONE']?.map((item, key) => (
                 <option key={key} className='text-xs' value={item}>
                   {item}
                 </option>

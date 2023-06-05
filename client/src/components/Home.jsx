@@ -72,7 +72,7 @@ export default function Home() {
           <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/ALL')}>
             <div className='bg-orange-100 p-3 rounded-2xl'><SelectAllTwoToneIcon color='success' /></div>
             <div className="details">
-              <p className='italic text-gray-400 font-thin subpixel-antialiased'>All Guest</p>
+              <p className='italic text-gray-400 font-thin subpixel-antialiased'>All</p>
               <p className='font-extralight subpixel-antialiased'>{data.reduce((a, b) => a + b.Number , 0)}</p>
             </div>
           </div>
@@ -81,7 +81,7 @@ export default function Home() {
           <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/IN')}>
             <div className='bg-pink-100 text-green p-3 rounded-xl'><HowToRegTwoToneIcon color='success' /></div>
             <div className="details">
-              <p className='italic text-gray-400 font-extralight subpixel-antialiased'>In Guest</p>
+              <p className='italic text-gray-400 font-extralight subpixel-antialiased'>In</p>
               <p className='font-extralight subpixel-antialiased'>{
                 (data.find(d => d.Status === 'IN')?.Number) ? data.find(d => d.Status === 'IN')?.Number : 0
               }</p>
@@ -92,7 +92,7 @@ export default function Home() {
           <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/OUT')}>
             <div className='bg-green-100 p-3 rounded-xl'><MeetingRoomTwoToneIcon color='success' /></div>
             <div className="details">
-              <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Out Guest</p>
+              <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Out</p>
               <p className='font-extralight subpixel-antialiased'>{
                 (data.find(d => d.Status === 'OUT')?.Number) ? data.find(d => d.Status === 'OUT')?.Number : 0
               }</p>
@@ -114,7 +114,7 @@ export default function Home() {
           <div className='flex gap-2 min-w-[200px] max-w-[20%] hover:cursor-pointer' onClick={()=>navigate('/guests/CANCELED')}>
             <div className='bg-violet-50 text-green p-3 rounded-xl'><NoAccountsTwoToneIcon color='success' /></div>
             <div className="details">
-              <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Cancelled guest</p>
+              <p className='italic text-gray-400 font-extralight subpixel-antialiased'>Cancelled</p>
               <p className='font-extralight subpixel-antialiased'>{
                 (data.find(d => d.Status === 'CANCELED')?.Number) ? data.find(d => d.Status === 'CANCELED')?.Number : 0
               }</p>

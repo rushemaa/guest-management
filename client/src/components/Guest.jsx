@@ -152,10 +152,10 @@ const Guest = () => {
             {/* <span className='pl-1 text-gray-500'>{details?.visitStatus}</span> */}
             <span className='text-gray-500'>
               <select onChange={handleVisitStatusChange}>
-                <option value="IN" selected={details?.visitStatus === "IN" ? true : false}>Visitor In</option>
+                <option value="IN" selected={details?.visitStatus === "IN" ? true : false}>In</option>
                 <option disabled={(userType === 'GATE') && true} value="PENDING" selected={details?.visitStatus === "PENDING" ? true : false}>Pending</option>
                 <option disabled={(userType === 'GATE') && true} value="CANCELED" selected={details?.visitStatus === "CANCELED" ? true : false}>Canceled</option>
-                {(userType !== "GATE") && <option value="OUT" selected={details?.visitStatus === "OUT" ? true : false}>Visitor Out</option>}
+                {(userType !== "GATE") && <option value="OUT" selected={details?.visitStatus === "OUT" ? true : false}>Out</option>}
               </select>
             </span>
           </div>
