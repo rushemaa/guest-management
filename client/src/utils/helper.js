@@ -52,22 +52,31 @@ export const weeklyOptions = (pending, inGuest, outGuest) => {
       },
       {
         name: 'In Guest',
-        type: 'bar',
+        type: 'line',
         // sampling: 'lttb',
         itemStyle: {
-          color: '#EE6666'
+          color: 'rgba(80, 153, 243)'
         },
         data: inGuest
       },
       {
         name: 'Out Guest',
-        type: 'line',
+        type: 'bar',
         // sampling: 'lttb',
         itemStyle: {
-          color: 'rgb(79, 244, 137)'
+          color: '#EE6666'
         },
         data: outGuest
-      }
+      },
+      // {
+      //   name: 'Canceled Guest',
+      //   type: 'bar',
+      //   // sampling: 'lttb',
+      //   itemStyle: {
+      //     color: '#EE6666'
+      //   },
+      //   data: outGuest
+      // }
     ]
   }
 }

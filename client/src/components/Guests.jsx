@@ -10,6 +10,7 @@ import Alert from './feedback/Alert';
 import { useParams } from 'react-router-dom';
 
 
+
 export default function Guests() {
 
   const [guests, setGuests] = useState([]);
@@ -96,6 +97,7 @@ export default function Guests() {
     else
       location.href = `/guest/${guestId}`
   }
+  // console.log(self.crypto.randomUUID().toString())
 
 
   return (

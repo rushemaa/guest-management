@@ -9,7 +9,6 @@ import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
 import Alert from './feedback/Alert';
 import { useNavigate } from 'react-router-dom';
-
 import * as echarts from 'echarts';
 import * as helper from '../utils/helper'
 
@@ -38,6 +37,7 @@ export default function Home() {
       const pending = new Array(7).fill(0)
       const inGuest = new Array(7).fill(0)
       const outGuest = new Array(7).fill(0)
+      // const canceled = new Array(7).fill(0)
       res.data.data.forEach(d => {
         if(d.status === 'PENDING')
           // setPending([...pending, pending[days.indexOf(d.visitday)] = d.number])
@@ -48,6 +48,9 @@ export default function Home() {
         else if(d.status === 'OUT')
           // setOutGuest([...outGuest, outGuest[days.indexOf(d.visitday)] = d.number])
           outGuest[days.indexOf(d.visitday)] = d.number
+        // else if(d.status === 'CANCELED')
+        //   // setOutGuest([...outGuest, outGuest[days.indexOf(d.visitday)] = d.number])
+        //   canceled[days.indexOf(d.visitday)] = d.number
       })
       const weekly = echarts?.init(chartsRef?.current);
       weekly?.setOption(helper?.weeklyOptions(pending, inGuest, outGuest));

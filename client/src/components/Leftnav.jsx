@@ -48,7 +48,6 @@ export default function LeftNav() {
       navigate('/');
     } catch (error) {
       dispatch(setMessage({ type: 'error', message: error }))
-
     }
   };
   return (
