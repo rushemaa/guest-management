@@ -1,19 +1,17 @@
 const Account = require("./AccountModel");
 const jwt = require("jsonwebtoken");
-const {
-  verifyToken,
-  password_hashing,
-  compare_password,
-} = require("../../tools/auth");
+const { password_hashing, compare_password } = require("../../tools/auth");
 const Gate = require("../Gates/GateModel");
+const { Op } = require("sequelize");
+const { checkAccount } = require("../../tools/security");
 
 require("dotenv").config();
 
-const  createAccount = async (req, res, next) => {
+const createAccount = async (req, res, next) => {
   try {
     let dt = req.body;
     let user = req.user.user;
-    if (user.role !== "ADMIN") throw "you don't have access";
+    await checkAccount(user, ["ADMIN"]);
     if (!dt.password || !dt.confirmPassword) throw "please enter password";
     if (
       !dt.password.match(
@@ -40,8 +38,10 @@ const  createAccount = async (req, res, next) => {
       if (!gateSearch || gateSearch === null) throw "invalid selected gate";
       savingObj.GateId = dt.GateId;
     }
-    let result = await Account.create(savingObj);
-    return res.status(200).json({ status: "ok", data: result });
+    await Account.create(savingObj);
+    return res
+      .status(200)
+      .json({ status: "ok", message: "user successfully saved ✅" });
   } catch (err) {
     console.log(err);
     if (
@@ -107,8 +107,7 @@ const accountlogin = async (req, res) => {
 const getAllAccount = async (req, res, next) => {
   try {
     let user = req.user.user;
-    if (user.role !== "ADMIN") throw "you don't have access";
-
+    await checkAccount(user, ["ADMIN"]);
     let { page } = req.params;
 
     let pagez = req.params.page || 1;
@@ -121,7 +120,7 @@ const getAllAccount = async (req, res, next) => {
     let size = 20;
     let result = await Account.findAndCountAll({
       attributes: {
-        exclude: ["createdAt", "updatedAt", "deletedAt", "gateId","password"],
+        exclude: ["createdAt", "updatedAt", "deletedAt", "gateId", "password"],
       },
       offset: page * size,
       limit: size,
@@ -142,8 +141,73 @@ const getAllAccount = async (req, res, next) => {
     res.status(412).json({ status: "fail", message: err });
   }
 };
+
+const updateAccount = async (req, res, next) => {
+  try {
+    let dt = req.body;
+    let user = req.user.user;
+    await checkAccount(user, ["ADMIN"]);
+    if (
+      dt.password &&
+      !dt.password.match(
+        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
+      )
+    )
+      throw "Invalid password";
+
+    if (dt.status && !["ACTIVE", "DEACTIVATED"].includes(dt.status))
+      throw "invalid status";
+
+    if (
+      dt.role &&
+      !["HOST", "SECURITY OFFICER", "ADMIN", "GATE"].includes(dt.role)
+    )
+      throw "invalid role";
+    if (
+      !dt.id ||
+      dt.id === null ||
+      dt.id === "" ||
+      (await Account.findOne({
+        where: { id: dt.id },
+      })) === null
+    )
+      throw "no account found";
+
+    if (
+      dt.username &&
+      (await Account.findOne({
+        where: {
+          username: dt.username,
+          id: { [Op.ne]: dt.id },
+          status: "ACTIVE",
+        },
+      })) !== null
+    )
+      throw "username has alread taken";
+
+    Account.update(dt, { where: { id: dt.id } });
+    return res
+      .status(200)
+      .json({ status: "ok", message: "account has been successfully updated" });
+  } catch (err) {
+    console.log(err);
+    if (
+      ["SequelizeUniqueConstraintError", "SequelizeValidationError"].includes(
+        err.name
+      )
+    )
+      err = err.errors[0].message;
+    res.status(412).json({ status: "fail", message: err });
+  }
+};
+
+const deleteAccount = (req, res) => {
+  try {
+  } catch (err) {}
+};
 module.exports = {
   createAccount,
   accountlogin,
   getAllAccount,
+  updateAccount,
 };

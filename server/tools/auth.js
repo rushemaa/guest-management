@@ -37,4 +37,8 @@ const compare_password = (entered_password, db_password) => {
   const result = bcrypt.compareSync(entered_password, db_password);
   return result;
 };
-module.exports = { verifyToken, password_hashing, compare_password };
+module.exports = {
+  verifyToken,
+  password_hashing,
+  compare_password,
+};

@@ -6,6 +6,7 @@ accountRoutes.post("/login", accountController.accountlogin);
 accountRoutes.use(verifyToken);
 accountRoutes
   .post("/create", accountController.createAccount)
-  .get("/findAll/:page", accountController.getAllAccount);
+  .get("/findAll/:page", accountController.getAllAccount)
+  .put("/update", accountController.updateAccount);
 
 module.exports = accountRoutes;

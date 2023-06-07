@@ -4,7 +4,7 @@ const findAll = async (req, res) => {
   try {
     let user = req.user.user;
 
-    if (!["ADMIN", "HOST","GATE","SECURITY OFFICER"].includes(user.role))
+    if (!["ADMIN", "HOST","GATE","COMMAND POST","SECURITY OFFICER"].includes(user.role))
       throw "Access denied";
 
     let result = await Host.findAll();

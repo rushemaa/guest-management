@@ -4,7 +4,7 @@ const getGates = async (req, res) => {
   try {
     let user = req.user.user;
 
-    if (!["ADMIN", "HOST","GATE","SECURITY OFFICER"].includes(user.role)) throw "you don't have access";
+    if (!["ADMIN", "HOST","GATE","COMMAND POST","SECURITY OFFICER"].includes(user.role)) throw "you don't have access";
 
     let result = await Gate.findAll({
       attributes: { exclude: ["deletedAt", "updatedAt", "createdAt"] },

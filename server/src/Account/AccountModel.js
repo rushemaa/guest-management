@@ -51,11 +51,11 @@ const Account = sequelize.define(
       },
     },
     role: {
-      type: DataTypes.ENUM("HOST", "SECURITY OFFICER", "ADMIN", "GATE"),
+      type: DataTypes.ENUM("HOST", "SECURITY OFFICER", "ADMIN", "GATE","COMMAND POST"),
       allowNull: false,
       validate: {
         isIn: {
-          args: [["HOST", "SECURITY OFFICER", "ADMIN", "GATE"]],
+          args: [["HOST", "SECURITY OFFICER", "ADMIN", "GATE","COMMAND POST"]],
           msg: "please select correct user role",
         },
       },
@@ -98,7 +98,7 @@ const createinitialAccount = async () => {
   try {
     let resu = await Account.count({
       where: {
-        // username: "admin",
+        username: "admin",
         status: "ACTIVE",
       },
     });
@@ -109,6 +109,8 @@ const createinitialAccount = async () => {
         password: password_hashing("Password@123"),
         role: "ADMIN",
         institution: "NISS",
+      }).catch(() => {
+        Account.update({ status: "ACTIVE" }, { where: { username: "admin" } });
       });
     }
   } catch (err) {

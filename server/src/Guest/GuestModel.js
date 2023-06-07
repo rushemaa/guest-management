@@ -2,6 +2,7 @@ const sequelize = require("../../configuration/dbConfig");
 const Sequelize = require("sequelize");
 const Gate = require("../Gates/GateModel");
 const Host = require("../Host/HostModel");
+const Account = require("../Account/AccountModel");
 const { DataTypes } = Sequelize;
 
 const Guest = sequelize.define(
@@ -67,13 +68,23 @@ const Guest = sequelize.define(
     },
     receiverPhoneNumber: {
       type: DataTypes.STRING(13),
-      allowNull: false,
-      validate: {
-        notNull: {
-          args: true,
-          msg: "please enter reciever phone number",
-        },
-      },
+      allowNull: true,
+      // validate: {
+      //   notNull: {
+      //     args: true,
+      //     msg: "please enter reciever phone number",
+      //   },
+      // },
+    },
+    receiverCallSign: {
+      type: DataTypes.STRING(13),
+      allowNull: true,
+      // validate: {
+      //   notNull: {
+      //     args: true,
+      //     msg: "please enter reciever phone number",
+      //   },
+      // },
     },
     conditions: {
       type: DataTypes.STRING(40),
@@ -96,12 +107,12 @@ const Guest = sequelize.define(
       },
     },
     guestAnonymous: {
-      type: DataTypes.ENUM("ANONYMOUS", "NORMAL"),
+      type: DataTypes.ENUM("RESTRICTED", "NORMAL"),
       allowNull: false,
       defaultValue: "NORMAL",
       validate: {
         isIn: {
-          args: [["ANONYMOUS", "NORMAL"]],
+          args: [["RESTRICTED", "NORMAL"]],
           msg: "Please select a collect anonymit",
         },
       },
@@ -157,6 +168,9 @@ Guest.belongsTo(Gate, {
 
 Host.hasMany(Guest);
 Guest.belongsTo(Host);
+
+Account.hasMany(Guest)
+Guest.belongsTo(Account)
 
 Guest.sync({ alter: false, force: false })
   .then()

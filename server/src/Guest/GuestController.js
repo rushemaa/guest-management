@@ -1,24 +1,34 @@
 "use strict";
 const { Op, Model, where } = require("sequelize");
 const sequelize = require("../../configuration/dbConfig");
-const { getRansadomString } = require("../../tools/functions");
+const {
+  getRansadomString,
+  getWeekStartDateAndEndDate,
+} = require("../../tools/functions");
 const Transport = require("../Transportation/TransportModel");
 const Guest = require("./GuestModel");
 const Account = require("../Account/AccountModel");
 const Gate = require("../Gates/GateModel");
 const Host = require("../Host/HostModel");
+const { checkAccount } = require("../../tools/security");
 
 const createGuest = async (req, res, next) => {
   try {
     let user = req.user.user;
 
-    if (!["HOST", "ADMIN"].includes(user.role)) throw "access denied 😡";
+    await checkAccount(user, ["HOST"]);
+
     for (const [key, value] of Object.entries(req.body)) {
       if (value === "undefined" || value === null || value.length === 0) {
         req.body[key] = null;
       }
     }
+    let account = await Account.findOne({
+      where: { username: user.username },
+      attributes: ["id"],
+    });
     let dt = req.body;
+    dt.AccountId = account.id;
 
     if (!["VIP", "VVIP", "NORMAL", "SENIOR OFFICIAL"].includes(dt.guestStatus))
       throw "guest status is required";
@@ -31,8 +41,21 @@ const createGuest = async (req, res, next) => {
 
     if (!dt.gate || (await Gate.count({ where: { id: dt.gate } })) === 0)
       throw "Please select correct gate";
-    if (!dt.HostId || (await Host.count({ where: { id: dt.HostId } })) === 0)
-      throw "Please select correct host";
+    if (!dt.HostId || dt.HostId === null) throw "host is required ‼️";
+    if (dt.HostId === "Other") {
+      if (!dt.hostName || dt.hostName === null) throw "Please enter host names";
+      // return res.json(
+      //   (await Host.findAll({ where: { hostName: dt.hostName } })).length
+      // );
+      if (
+        (await Host.findAll({ where: { hostName: dt.hostName } })).length != 0
+      )
+        throw "Host name already exist";
+    } else {
+      if (!dt.HostId || (await Host.count({ where: { id: dt.HostId } })) === 0)
+        throw "Please select correct host";
+    }
+
     if (!dt.transportation) throw "transport mean is required";
 
     if (!Array.isArray(dt.transportation))
@@ -74,6 +97,17 @@ const createGuest = async (req, res, next) => {
       .transaction(async (t) => {
         dt.guestKeys = "";
         dt.randomReference = rand();
+        if (dt.HostId === "Other") {
+          let host = await Host.create(
+            {
+              hostName: dt.hostName,
+              hostPhone: dt.hostPhone || null,
+              callSign: dt.callSign || null,
+            },
+            { transaction: t }
+          );
+          dt.HostId = host.id;
+        }
         let guest = await Guest.create(dt, { transaction: t });
 
         trans_data.forEach((x) => {
@@ -118,15 +152,6 @@ const findAll = async (req, res) => {
     let attributes = "";
     let { page, visitStatus } = req.params;
 
-    let pagez = req.params.page || 1;
-    const pageAsNumber = Number.parseInt(pagez) - 1;
-
-    page = 0;
-    if (!Number.isNaN(pageAsNumber) && pageAsNumber > 0) {
-      page = pageAsNumber;
-    }
-    let size = 20;
-
     if (user.role === "GATE") {
       let getUserGate = await Account.findOne({
         where: { username: user.username, status: "ACTIVE" },
@@ -134,9 +159,12 @@ const findAll = async (req, res) => {
       });
       if (getUserGate)
         where = {
-          visitStatus: "PENDING",
-          gate: getUserGate.GateId,
-          date: { [Op.gte]: new Date() },
+          visitStatus:
+            visitStatus === "ALL"
+              ? ["CANCELED", "PENDING", "IN", "OUT"]
+              : visitStatus,
+          // gate: getUserGate.GateId,
+          date: new Date(),
         };
       attributes = {};
       let result = await Guest.findAndCountAll({
@@ -172,12 +200,13 @@ const findAll = async (req, res) => {
       let data = result.rows.map((x) => {
         return {
           guestFullName:
-            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestFullName,
+            x.guestAnonymous === "RESTRICTED" ? "RESTRICTED" : x.guestFullName,
           guestIdNumber:
-            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestIdNumber,
+            x.guestAnonymous === "RESTRICTED" ? "RESTRICTED" : x.guestIdNumber,
           guestPhone:
-            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestPhone,
-          comeFrom: x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.comeFrom,
+            x.guestAnonymous === "RESTRICTED" ? "RESTRICTED" : x.guestPhone,
+          comeFrom:
+            x.guestAnonymous === "RESTRICTED" ? "RESTRICTED" : x.comeFrom,
           time: x.time,
           date: x.date,
           receiverFullName: x.receiverFullName,
@@ -202,14 +231,27 @@ const findAll = async (req, res) => {
         data: data,
         // totalPages: Math.ceil(result.count / size),
       });
-    } else if (["HOST", "SECURITY OFFICER", "ADMIN"].includes(user.role)) {
+    } else if (
+      ["HOST", "ADMIN", "SECURITY OFFICER", "COMMAND POST"].includes(user.role)
+    ) {
+
+      let getUserId = await Account.findOne({
+        where: { username: user.username, status: "ACTIVE" },
+        attributes: ["id"],
+      });
       where = {
         visitStatus:
           visitStatus === "ALL"
             ? ["CANCELED", "PENDING", "IN", "OUT"]
             : visitStatus,
-        date: { [Op.gte]: new Date() },
+        date: {
+          [Op.between]: [
+            getWeekStartDateAndEndDate().firstDate,
+            getWeekStartDateAndEndDate().lastDate,
+          ],
+        }, 
       };
+      if (user.role === "HOST") where.AccountId = getUserId.id;
       let data = await Guest.findAll({
         where,
         attributes: {
@@ -267,18 +309,16 @@ const getGuest = async (req, res, next) => {
     let { randomReference } = req.params;
     let where = "";
 
+    let getUserId = await Account.findOne({
+      where: { username: user.username, status: "ACTIVE" },
+      attributes: ["id"],
+    });
     if (user.role === "GATE") {
-      let getUserGate = await Account.findOne({
-        where: { username: user.username, status: "ACTIVE" },
-        attributes: ["GateId", "id"],
-      });
-
-      if (!getUserGate || getUserGate === null) throw "Access denied 😡";
-
+      await checkAccount(user, ["GATE"]);
       where = {
         randomReference: randomReference,
         // visitStatus: "PENDING",
-        gate: getUserGate.GateId,
+        // gate: getUserGate.GateId,
       };
       let findGuest = await Guest.findOne({
         where,
@@ -321,20 +361,20 @@ const getGuest = async (req, res, next) => {
         status: "ok",
         data: {
           guestFullName:
-            findGuest.guestAnonymous === "ANONYMOUS"
-              ? "ANONYMOUS"
+            findGuest.guestAnonymous === "RESTRICTED"
+              ? "RESTRICTED"
               : findGuest.guestFullName,
           guestIdNumber:
-            findGuest.guestAnonymous === "ANONYMOUS"
-              ? "ANONYMOUS"
+            findGuest.guestAnonymous === "RESTRICTED"
+              ? "RESTRICTED"
               : findGuest.guestIdNumber,
           guestPhone:
-            findGuest.guestAnonymous === "ANONYMOUS"
-              ? "ANONYMOUS"
+            findGuest.guestAnonymous === "RESTRICTED"
+              ? "RESTRICTED"
               : findGuest.guestPhone,
           comeFrom:
-            findGuest.guestAnonymous === "ANONYMOUS"
-              ? "ANONYMOUS"
+            findGuest.guestAnonymous === "RESTRICTED"
+              ? "RESTRICTED"
               : findGuest.comeFrom,
           time: findGuest.time,
           date: findGuest.date,
@@ -357,8 +397,12 @@ const getGuest = async (req, res, next) => {
         },
       });
     } else {
-      // if()
-      where = { randomReference: randomReference };
+      if (["COMMAND POST", "SECURITY OFFICER"].includes(user.role)) {
+        where = { randomReference: randomReference };
+      } else if (user.role === "HOST") {
+        where = { randomReference: randomReference, AccountId: getUserId.id };
+      }
+
       let findGuest = await Guest.findOne({
         where,
         attributes: {
@@ -429,14 +473,9 @@ const updateVisitStatus = async (req, res, next) => {
       throw "please enter random reference 😡";
 
     if (user.role === "GATE") {
-      visitStatus = "IN";
-      let getUserGate = await Account.findOne({
-        where: { username: user.username, status: "ACTIVE" },
-        attributes: ["GateId", "id"],
-      });
-      if (!getUserGate || getUserGate === null) throw "access denied 😡";
-      where.gate = getUserGate.GateId;
-      where.visitStatus = "PENDING";
+      await checkAccount(user, ["GATE"]);
+      if (!["IN", "OUT"].includes(visitStatus)) throw "Invalid visit status";
+      where.visitStatus = ["IN","PENDING","OUT"];
     } else {
       if (
         !["CANCELED", "PENDING", "POSTPONED", "IN", "OUT"].includes(visitStatus)
@@ -483,14 +522,13 @@ const guestSearch = async (req, res, next) => {
     let user = req.user.user;
 
     let where = "";
-    let attributes = "";
     let { dateTo, dateFrom, key } = req.body;
+    let getUserGate = await Account.findOne({
+      where: { username: user.username, status: "ACTIVE" },
+      attributes: ["id"],
+    });
 
     if (user.role === "GATE") {
-      let getUserGate = await Account.findOne({
-        where: { username: user.username, status: "ACTIVE" },
-        attributes: ["GateId", "id"],
-      });
       if (getUserGate) {
         where = {
           guestKeys: {
@@ -502,8 +540,7 @@ const guestSearch = async (req, res, next) => {
               [Op.substring]: `,${key},`,
             },
           },
-          gate: getUserGate.GateId,
-          date: { [Op.gte]: new Date() },
+          date: new Date(),
         };
       }
       let result = await Guest.findAll({
@@ -537,12 +574,13 @@ const guestSearch = async (req, res, next) => {
       let data = result.map((x) => {
         return {
           guestFullName:
-            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestFullName,
+            x.guestAnonymous === "RESTRICTED" ? "RESTRICTED" : x.guestFullName,
           guestIdNumber:
-            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestIdNumber,
+            x.guestAnonymous === "RESTRICTED" ? "RESTRICTED" : x.guestIdNumber,
           guestPhone:
-            x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.guestPhone,
-          comeFrom: x.guestAnonymous === "ANONYMOUS" ? "ANONYMOUS" : x.comeFrom,
+            x.guestAnonymous === "RESTRICTED" ? "RESTRICTED" : x.guestPhone,
+          comeFrom:
+            x.guestAnonymous === "RESTRICTED" ? "RESTRICTED" : x.comeFrom,
           time: x.time,
           date: x.date,
           receiverFullName: x.receiverFullName,
@@ -566,7 +604,9 @@ const guestSearch = async (req, res, next) => {
         status: "ok",
         data: data,
       });
-    } else if (["HOST", "SECURITY OFFICER", "ADMIN"].includes(user.role)) {
+    } else if (
+      ["HOST", "SECURITY OFFICER", "COMMAND POST", "ADMIN"].includes(user.role)
+    ) {
       if (key && dateFrom && dateTo) {
         where = {
           guestKeys: {
@@ -825,7 +865,12 @@ const updateGuest = async (req, res) => {
   try {
     let user = req.user.user;
 
-    if (!["HOST", "ADMIN"].includes(user.role)) throw "Access denied 😡";
+    await checkAccount(user, ["HOST"]);
+
+    let getUser = await Account.findOne({
+      where: { username: user.username, status: "ACTIVE" },
+      attributes: ["id"],
+    });
 
     for (const [key, value] of Object.entries(req.body)) {
       if (value === "undefined" || value === null || value.length === 0) {
@@ -843,6 +888,7 @@ const updateGuest = async (req, res) => {
       where: {
         randomReference: dt.randomReference,
         visitStatus: { [Op.notIn]: ["OUT"] },
+        AccountId: getUser.id,
       },
     });
 
@@ -860,7 +906,7 @@ const updateGuest = async (req, res) => {
       throw "Please select correct host";
     if (
       dt.guestAnonymous &&
-      !["ANONYMOUS", "NORMAL"].includes(dt.guestAnonymous)
+      !["RESTRICTED", "NORMAL"].includes(dt.guestAnonymous)
     )
       throw "Invalid guest anonymous";
     if (
@@ -898,7 +944,7 @@ const updateTransport = async (req, res) => {
   try {
     let user = req.user.user;
 
-    if (!["HOST", "ADMIN"].includes(user.role)) throw "Access denied 😡";
+    await checkAccount(user, ["HOST"]);
 
     for (const [key, value] of Object.entries(req.body)) {
       if (value === "undefined" || value === null || value.length === 0) {
