@@ -35,12 +35,12 @@ const Login = () => {
 
   useEffect(() => {
     if (status) {
-      if (!(auth.user.role === "GATE")) {
+      // if (!(auth.user.role === "GATE")) {
         navigate("/home");
-      } 
-      else {
-        navigate("/guests/PENDING");
-      }
+      // } 
+      // else {
+      //   navigate("/guests/PENDING");
+      // }
     }
   }, [status]);
 

@@ -194,7 +194,7 @@ const AddUser = ({ toggle, isToggled, data, postOp }) => {
               ) : (
                 ""
               )}
-              {["HOST", "ADMIN", "SECURITY OFFICER", "GATE"].map(
+              {["HOST", "ADMIN", "SECURITY OFFICER", "GATE", "COMMAND POST"].map(
                 (item, key) => (
                   <option key={key} className="text-xs" value={item}>
                     {item}

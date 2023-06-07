@@ -96,7 +96,7 @@ const Guest = () => {
             <ArrowBackRoundedIcon />
           </button>
           <h1 className='font-semibold text-2xl'>Guest information</h1>
-          {(userType !== 'GATE') && <div className='information flex items-center justify-end flex-row gap-x-7 grow text-center'>
+          {(userType === 'HOST') && <div className='information flex items-center justify-end flex-row gap-x-7 grow text-center'>
             <CreateTwoToneIcon onClick={() => { handleEdit('guest', details) }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
             <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 text-red-800 hover:text-green-800' onClick={handleGuestDelete} />
           </div>}
@@ -128,16 +128,28 @@ const Guest = () => {
             <span className='pl-2 text-gray-500'>{details?.time}</span>
           </div>
           <div className='information flex flex-col'>
+            <label className='text-lg font-normal'>Host</label>
+            <span className='pl-1 text-gray-500'>{details?.Host?.hostName}</span>
+          </div>
+          <div className='information flex flex-col'>
+            <label className='text-lg font-normal'>Host Call sign</label>
+            <span className='pl-1 text-gray-500'>{details?.Host?.callSign}</span>
+          </div>
+          <div className='information flex flex-col'>
+            <label className='text-lg font-normal'>Host Phone number</label>
+            <span className='pl-1 text-gray-500'>{details?.Host?.hostPhone}</span>
+          </div>
+          <div className='information flex flex-col'>
             <label className='text-lg font-normal'>Receiver</label>
             <span className='pl-1 text-gray-500'>{details?.receiverFullName}</span>
           </div>
           <div className='information flex flex-col'>
-            <label className='text-lg font-normal'>Receiver number</label>
-            <span className='pl-1 text-gray-500'>{details?.receiverPhoneNumber}</span>
+            <label className='text-lg font-normal'>Receiver Call sign</label>
+            <span className='pl-1 text-gray-500'>{details?.receiverCallSign}</span>
           </div>
           <div className='information flex flex-col'>
-            <label className='text-lg font-normal'>Host/Call sign</label>
-            <span className='pl-1 text-gray-500'>{details?.Host?.hostName}/ {details?.Host?.callSign}</span>
+            <label className='text-lg font-normal'>Receiver Phone number</label>
+            <span className='pl-1 text-gray-500'>{details?.receiverPhoneNumber}</span>
           </div>
           <div className='information flex flex-col'>
             <label className='text-lg font-normal'>Gate</label>
@@ -155,7 +167,8 @@ const Guest = () => {
                 <option value="IN" selected={details?.visitStatus === "IN" ? true : false}>In</option>
                 <option disabled={(userType === 'GATE') && true} value="PENDING" selected={details?.visitStatus === "PENDING" ? true : false}>Pending</option>
                 <option disabled={(userType === 'GATE') && true} value="CANCELED" selected={details?.visitStatus === "CANCELED" ? true : false}>Canceled</option>
-                {(userType !== "GATE") && <option value="OUT" selected={details?.visitStatus === "OUT" ? true : false}>Out</option>}
+                <option disabled={(userType === 'ADMIN') && true} value="OUT" selected={details?.visitStatus === "OUT" ? true : false}>Out</option>
+                {/* {(userType !== "GATE") && <option value="OUT" selected={details?.visitStatus === "OUT" ? true : false}>Out</option>} */}
               </select>
             </span>
           </div>
@@ -164,7 +177,7 @@ const Guest = () => {
         {/* Entrance details */}
         <div className='flex gap-x-5 pt-2 items-center justify-between'>
           <h2 className='font-semibold text-xl'><u>Entrance information</u></h2>
-          {(userType !== 'GATE') && <button className='hover:bg-main-color-onhover transition-all duration-300' onClick={() => { isCEditToggled(true) }}><AddCircleTwoToneIcon /> &nbsp; Add Entrance</button>}
+          {(userType === 'HOST') && <button className='hover:bg-main-color-onhover transition-all duration-300' onClick={() => { isCEditToggled(true) }}><AddCircleTwoToneIcon /> &nbsp; Add Entrance</button>}
         </div>
         {
           details?.Transports?.map((transport, i) =>
@@ -176,7 +189,7 @@ const Guest = () => {
               <div></div>
                 <div className='information flex items-center flex-row gap-x-7'>
                   {
-                    (userType !== 'GATE') && <><CreateTwoToneIcon onClick={() => { handleEdit('car', transport) }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
+                    (userType === 'HOST') && <><CreateTwoToneIcon onClick={() => { handleEdit('car', transport) }} className='cursor-pointer hover:scale-110 hover:text-green-800' />
                     <DeleteTwoToneIcon className='cursor-pointer hover:scale-110 text-red-800 hover:text-green-800' onClick={() => handleTransportDelete(transport?.id)} />
                     </>
                   }

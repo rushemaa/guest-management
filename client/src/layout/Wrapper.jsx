@@ -1,6 +1,6 @@
-import { Alert } from '@mui/material'
 import React from 'react'
 import { ImCross } from 'react-icons/im'
+import Alert from '../components/feedback/Alert'
 
 const Wrapper = ({ title, toggle, isToggled, children }) => {
     return (

@@ -10,15 +10,15 @@ import Alert from './feedback/Alert';
 import { useParams } from 'react-router-dom';
 
 
-
 export default function Guests() {
-
   const [guests, setGuests] = useState([]);
   const [filterRes, setFilterRes] = useState([]);
   const [dateFilter, setDateFilter] = useState({});
   const [visitStatus, setVisitorStatus] = useState("");
   const dispatch = useDispatch();
   const { status } = useParams()
+  const userType = JSON.parse(sessionStorage.getItem(import.meta.env.VITE_APP_AUTH))?.user?.role;
+
 
   useEffect(() => {
     setVisitorStatus(status)
@@ -120,10 +120,10 @@ export default function Guests() {
               </select>
             </label>
           </div>
-          <div className='flex items-center gap-x-10 gap-y-0 flex-wrap'>
+          {userType !== 'GATE' && <div className='flex items-center gap-x-10 gap-y-0 flex-wrap'>
             <div className='flex flex-nowrap gap-2'><label>From:</label> <input type='date' name='from' onChange={handleChange} className='px-2' /></div>
             <div className='flex flex-nowrap gap-2'><label>To:</label> <input type='date' name='to' onChange={handleChange} className='px-2' /></div>
-          </div>
+          </div>}
           <div>
             <input type='search' onChange={(e) => { handleSearch(e.target.value) }} placeholder='search for guest' className='p-2 bg-gray-100 rounded-md' style={{ width: '300px', boxShadow: '0 0 2px black' }} />
           </div>

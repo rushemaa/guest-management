@@ -20,6 +20,8 @@ export default function Home() {
   // const [outGuest, setOutGuest] = useState(new Array(7).fill(0))
   const [data, setData] = useState([]);
   const navigate = useNavigate();
+  const userType = JSON.parse(sessionStorage.getItem(import.meta.env.VITE_APP_AUTH))?.user?.role;
+
 
   useEffect(()=>{
     axios.get(BASE_URL + '/dashboard/dashStats')
@@ -125,7 +127,7 @@ export default function Home() {
           </div>
         </div>
 {/* ref={chartsRef} */}
-        <div style={{ width: '100%', height: 'auto', padding: '30px 0px'}}>
+        {userType !== 'GATE' && <div style={{ width: '100%', height: 'auto', padding: '30px 0px'}}>
           <p className='font-bold'>
             Guests traffic and analytics<br></br>
             <span className='text-sm font-thin text-gray-500'>analytic details about incoming guest</span>
@@ -135,7 +137,7 @@ export default function Home() {
             {/* <div className="w-1/2 h-[400px]" ref={chartsRef}> </div> */}
             {/* <div className="w-1/2 h-[400px]" ref={chartsRef}> </div> */}
           </div>
-        </div>
+        </div>}
 
       </div>
     </div>
